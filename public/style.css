@@ -42,7 +42,7 @@ input {
     color: var(--text);
     background-color: var(--frame-bg);
     border: none;
-    padding: 3px;
+    padding: 2px 6px;
     outline: none;
 }
 
@@ -234,7 +234,7 @@ hr {
 
 .stat-value, .stat-diff {
     background-color: var(--frame-bg);
-    padding: 2px;
+    padding: 2px 6px;
 }
 
 /* SETTINGS ----------------------------------------------------- */
@@ -245,18 +245,17 @@ hr {
 
 #stat-settings {
     column-count: 2;
+    column-gap: 6px;
 }
 
 #stat-settings label,
 #customization-settings label {
     display: block;
-    break-inside: avoid;
     margin-bottom: 4px;
 }
 
-
-#stat-settings p {
-    break-inside: avoid;
+#customization-settings label:last-child {
+    margin-bottom: 0;
 }
 
 /* LOGIN -------------------------------------------------------- */

@@ -231,7 +231,6 @@ async function displayStats(resetCountdown = true) {
             initialStats._mode !== currentMode
         ) {
             resetInitialStats({ ...stats, _uid: currentUid, _mode: currentMode });
-            return;
         }
 
         const enabledStats = getEnabledStats();
@@ -411,7 +410,29 @@ function migrateStatSettings() {
 
 window.migrateStatSettings = migrateStatSettings;
 
+function generateStatSettingsCheckboxes() {
+    const container = document.getElementById('stat-settings');
+    if (!container) return;
+    container.innerHTML = '';
+
+    Object.entries(STAT_META).forEach(([key, meta]) => {
+        const label = document.createElement('label');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = key;
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(' ' + (meta.label || key)));
+        container.appendChild(label);
+        checkbox.addEventListener('change', () => {
+            if (typeof window.saveStatSettings === 'function') {
+                window.saveStatSettings();
+            }
+        });
+    });
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
+    generateStatSettingsCheckboxes();
     let gamemode = 'osu';
     if (window.osuAPI?.getUserConfig) {
         const config = await window.osuAPI.getUserConfig();

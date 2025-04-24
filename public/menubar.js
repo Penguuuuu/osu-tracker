@@ -26,10 +26,6 @@ async function loadStatSettings() {
         saved = JSON.parse(localStorage.getItem('statSettings') || '{}');
     }
 
-    if (window.migrateStatSettings) {
-        saved = window.migrateStatSettings();
-    }
-
     document.querySelectorAll('#stat-settings input[type="checkbox"][value]').forEach(cb => {
         cb.checked = saved[cb.value] === true;
     });
