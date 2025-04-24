@@ -269,8 +269,8 @@ function setCurrentGamemode(mode) {
         window.osuAPI.saveCredentials({ mode });
     }
     initialStats = null;
-    Object.keys(prevStatDiffs).forEach(k => prevStatDiffs[k] = 0);
-    Object.keys(prevStatValues).forEach(k => prevStatValues[k] = undefined);
+    Object.keys(prevStatDiffs).forEach(k => delete prevStatDiffs[k]);
+    Object.keys(prevStatValues).forEach(k => delete prevStatValues[k]);
     Object.keys(STAT_META).forEach(key => {
         const diffEl = document.getElementById(`${key}-diff`);
         if (diffEl) diffEl.textContent = '';
@@ -436,6 +436,7 @@ function generateStatSettingsCheckboxes() {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
+    migrateStatSettings();
     generateStatSettingsCheckboxes();
     let gamemode = 'osu';
     if (window.osuAPI?.getUserConfig) {
