@@ -10,7 +10,7 @@ git clone https://github.com/Penguuuuu/osu-tracker.git
 cd osu-tracker
 ```
 
-install modules
+Install modules
 ```sh
 npm install
 ```

@@ -222,7 +222,7 @@ hr {
 
 #stats-grid {
     display: grid;
-    grid-template-columns: auto 1fr 1fr;
+    grid-template-columns: auto 178px 178px;
     gap: 4px;
 }
 
