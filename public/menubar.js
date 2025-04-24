@@ -153,18 +153,6 @@ window.addEventListener('DOMContentLoaded', () => {
         if (window.rerenderStatDiffs) window.rerenderStatDiffs();
     });
 
-    document.querySelectorAll('#stat-settings input[type="checkbox"][value]').forEach(cb => {
-        cb.addEventListener('change', () => {
-            if (typeof window.saveStatSettings === 'function') {
-                window.saveStatSettings();
-            }
-            if (typeof window.applyStatVisibility === 'function') {
-                window.applyStatVisibility();
-            }
-            if (window.rerenderStatDiffs) window.rerenderStatDiffs();
-        });
-    });
-
     document.getElementById('color-diffs-toggle')?.addEventListener('change', () => {
         if (typeof window.saveStatSettings === 'function') {
             window.saveStatSettings();

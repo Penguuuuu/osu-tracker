@@ -427,6 +427,10 @@ function generateStatSettingsCheckboxes() {
             if (typeof window.saveStatSettings === 'function') {
                 window.saveStatSettings();
             }
+            if (typeof window.applyStatVisibility === 'function') {
+                window.applyStatVisibility();
+            }
+            if (window.rerenderStatDiffs) window.rerenderStatDiffs();
         });
     });
 }
