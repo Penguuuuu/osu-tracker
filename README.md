@@ -4,7 +4,7 @@
 
 ## Building
 
-### Build for Windows (from any OS with Wine):
+### Build for Windows:
 
 ```sh
 npm run build-win
