@@ -164,5 +164,12 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    document.getElementById('color-diffs-toggle')?.addEventListener('change', () => {
+        if (typeof window.saveStatSettings === 'function') window.saveStatSettings();
+    });
+    document.getElementById('show-timer-toggle')?.addEventListener('change', () => {
+        if (typeof window.saveStatSettings === 'function') window.saveStatSettings();
+    });
+
     setActiveMenu('home-btn');
 });
