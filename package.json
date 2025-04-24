@@ -1,6 +1,6 @@
 {
 "name": "osu-tracker",
-"version": "1.0.0",
+"version": "1.0.1",
 "main": "src/main.js",
 "description": "A tracker for osu! stats.",
 "author": "Patchouli <patchoulidev@gmail.com>",
@@ -22,7 +22,6 @@
     },
     "win": {
     "target": [
-        "nsis",
         "portable"
     ]
     }

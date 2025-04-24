@@ -15,14 +15,9 @@ install modules
 npm install
 ```
 
-Build for Windows:
+Build for Windows/Linux:
 
 ```sh
 npm run build-win
-```
-
-Build for Linux:
-
-```sh
 npm run build-linux
 ```
