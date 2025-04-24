@@ -1,5 +1,5 @@
 # osu-tracker
-
+Still early in progress and i'm not a programmer xd
 
 
 ## Building
