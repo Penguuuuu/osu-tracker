@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="window-bar">
+        <span id="window-title">osu! Tracker</span>
+        <button id="min-btn"   class="window-btn"></button>
+        <button id="close-btn" class="window-btn"></button>
+    </div>
+    <div id="menu-bar">
+        <div id="menu-buttons">
+            <button id="home-btn"     class="menu-btn">Home</button>
+            <button id="settings-btn" class="menu-btn">Settings</button>
+            <button id="login-btn"    class="menu-btn">Login</button>
+            <button id="help-btn"     class="menu-btn">Help</button>
+        </div>
+    </div>
+    <div id="main-content">
+        <div id="settings-modal" style="display:none;">
+            <div id="settings-top-row" style="display: flex; gap: 24px; align-items: flex-start;">
+                <div>
+                    <p>
+                        Gamemode<br>
+                        <div id="settings-gamemode-dropdown" class="custom-dropdown" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
+                            <div class="selected" aria-labelledby="settings-gamemode-dropdown">osu!</div>
+                            <div class="dropdown-options" role="listbox">
+                                <div class="option" data-value="osu"    role="option" tabindex="0">osu!</div>
+                                <div class="option" data-value="taiko"  role="option" tabindex="0">Taiko</div>
+                                <div class="option" data-value="fruits" role="option" tabindex="0">Catch</div>
+                                <div class="option" data-value="mania"  role="option" tabindex="0">Mania</div>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+                <div id="customization-settings">
+                    <p>Display Options<br>
+                        <label><input type="checkbox" id="color-diffs-toggle" checked> Colored stat differences</label>
+                        <label><input type="checkbox" id="show-timer-toggle" checked> Show fetch timer</label>
+                    </p>
+                </div>
+            </div>
+            <hr>
+            <div id="stat-settings">
+                <p>Core Stats<br>
+                    <label><input type="checkbox" value="rank_global"> Global Rank</label>
+                    <label><input type="checkbox" value="rank_country"> Country Rank</label>
+                    <label><input type="checkbox" value="score_rank"> Score Rank</label>
+                    <label><input type="checkbox" value="rank_global_ss"> Global SS Rank</label>
+                    <label><input type="checkbox" value="rank_country_ss"> Country SS Rank</label>
+                    <label><input type="checkbox" value="clears"> Clears</label>
+                    <label><input type="checkbox" value="clears_loved"> Clears Loved</label>
+                    <label><input type="checkbox" value="completion"> Completion</label>
+                    <label><input type="checkbox" value="score_total"> Total Score</label>
+                    <label><input type="checkbox" value="score_ranked"> Ranked Score</label>
+                </p>
+                <br>
+                <p>Hit Counts<br>
+                    <label><input type="checkbox" value="count_hits"> Total Hits</label>
+                    <label><input type="checkbox" value="count_300"> 300s</label>
+                    <label><input type="checkbox" value="count_100"> 100s</label>
+                    <label><input type="checkbox" value="count_50"> 50s</label>
+                    <label><input type="checkbox" value="count_0"> Misses</label>
+                </p>
+                <br>
+                <p>Grades<br>
+                    <label><input type="checkbox" value="rank_ss_total"> Total SS</label>
+                    <label><input type="checkbox" value="rank_s_total"> Total S</label>
+                    <label><input type="checkbox" value="rank_ssh"> SSH Count</label>
+                    <label><input type="checkbox" value="rank_ss"> SS Count</label>
+                    <label><input type="checkbox" value="rank_sh"> SH Count</label>
+                    <label><input type="checkbox" value="rank_s"> S Count</label>
+                    <label><input type="checkbox" value="rank_a"> A Count</label>
+                    <label><input type="checkbox" value="rank_b"> B Count</label>
+                    <label><input type="checkbox" value="rank_c"> C Count</label>
+                    <label><input type="checkbox" value="rank_d"> D Count</label>
+                </p>
+                <br>
+                <p>Daily/Weekly<br>
+                    <label><input type="checkbox" value="top_10_daily"> Top 10 Daily</label>
+                    <label><input type="checkbox" value="top_50_daily"> Top 50 Daily</label>
+                    <label><input type="checkbox" value="weekly_best"> Weekly Best</label>
+                    <label><input type="checkbox" value="weekly_current"> Weekly Current</label>
+                    <label><input type="checkbox" value="daily_best"> Daily Best</label>
+                    <label><input type="checkbox" value="daily_streak"> Daily Streak</label>
+                </p>
+                <br>
+                <p>Other<br>
+                    <label><input type="checkbox" value="pp"> PP</label>
+                    <label><input type="checkbox" value="total_pp"> Total PP</label>
+                    <label><input type="checkbox" value="accuracy"> Accuracy</label>
+                    <label><input type="checkbox" value="level"> Level</label>
+                    <label><input type="checkbox" value="play_count"> Play Count</label>
+                    <label><input type="checkbox" value="play_time"> Play Time</label>
+                    <label><input type="checkbox" value="replays_watched"> Replays Watched</label>
+                    <label><input type="checkbox" value="followers"> Followers</label>
+                    <label><input type="checkbox" value="top50s"> Top 50s</label>
+                </p>
+            </div>
+        </div>
+        <div id="login-modal" style="display:none;">
+            <div id="login-grid">
+                <div class="login-label">UID:</div>
+                <div class="login-input"><input type="text"     id="login-uid"></div>
+                <div class="login-label">Client ID:</div>
+                <div class="login-input"><input type="text"     id="login-clientid"></div>
+                <div class="login-label">Client Secret:</div>
+                <div class="login-input"><input type="password" id="login-clientsecret"></div>
+            </div>
+            <button id="login-save-btn">Save</button>
+        </div>
+        <div id="help-modal"style="display:none;">
+            <p>[Getting Started]</p>
+            <p>To start, click on the 'Login' section and enter you details.</p>
+            <p>Then click on settings to set your stats. Make sure to check out the customization options!</p>
+            <br>
+            <p>For help or suggestions you can reach me here</p>
+            <p>Email: patchoulidev@gmail.com</p>
+            <p>Discord: sleepypatchouli</p>
+        </div>
+        <div id="stats">
+            <div id="user-details">
+                <img id="avatar-img" src="" style="display:none;">
+                <div id="profile-info">
+                    <span id="username"></span>
+                    <span id="gamemode-container"></span>
+                    <span id="fetch-timer"></span>
+                </div>
+            </div>
+            <div id="stats-grid">
+                <div class="stat-label">Global Rank:</div>
+                <div class="stat-value"><span id="rank_global"></span></div>
+                <div class="stat-diff"><span id="rank_global-diff"></span></div>
+
+                <div class="stat-label">Country Rank:</div>
+                <div class="stat-value"><span id="rank_country"></span></div>
+                <div class="stat-diff"><span id="rank_country-diff"></span></div>
+
+                <div class="stat-label">Score Rank:</div>
+                <div class="stat-value"><span id="score_rank"></span></div>
+                <div class="stat-diff"><span id="score_rank-diff"></span></div>
+
+                <div class="stat-label">Global SS Rank:</div>
+                <div class="stat-value"><span id="rank_global_ss"></span></div>
+                <div class="stat-diff"><span id="rank_global_ss-diff"></span></div>
+
+                <div class="stat-label">Country SS Rank:</div>
+                <div class="stat-value"><span id="rank_country_ss"></span></div>
+                <div class="stat-diff"><span id="rank_country_ss-diff"></span></div>
+
+                <div class="stat-label">Clears:</div>
+                <div class="stat-value"><span id="clears"></span></div>
+                <div class="stat-diff"><span id="clears-diff"></span></div>
+
+                <div class="stat-label">Clears Loved:</div>
+                <div class="stat-value"><span id="clears_loved"></span></div>
+                <div class="stat-diff"><span id="clears_loved-diff"></span></div>
+
+                <div class="stat-label">Completion:</div>
+                <div class="stat-value"><span id="completion"></span></div>
+                <div class="stat-diff"><span id="completion-diff"></span></div>
+
+                <div class="stat-label">Total Score:</div>
+                <div class="stat-value"><span id="score_total"></span></div>
+                <div class="stat-diff"><span id="score_total-diff"></span></div>
+
+                <div class="stat-label">Ranked Score:</div>
+                <div class="stat-value"><span id="score_ranked"></span></div>
+                <div class="stat-diff"><span id="score_ranked-diff"></span></div>
+
+                <div class="stat-label">Total Hits:</div>
+                <div class="stat-value"><span id="count_hits"></span></div>
+                <div class="stat-diff"><span id="count_hits-diff"></span></div>
+
+                <div class="stat-label">300s:</div>
+                <div class="stat-value"><span id="count_300"></span></div>
+                <div class="stat-diff"><span id="count_300-diff"></span></div>
+
+                <div class="stat-label">100s:</div>
+                <div class="stat-value"><span id="count_100"></span></div>
+                <div class="stat-diff"><span id="count_100-diff"></span></div>
+
+                <div class="stat-label">50s:</div>
+                <div class="stat-value"><span id="count_50"></span></div>
+                <div class="stat-diff"><span id="count_50-diff"></span></div>
+
+                <div class="stat-label">Misses:</div>
+                <div class="stat-value"><span id="count_0"></span></div>
+                <div class="stat-diff"><span id="count_0-diff"></span></div>
+
+                <div class="stat-label">Total SS:</div>
+                <div class="stat-value"><span id="rank_ss_total"></span></div>
+                <div class="stat-diff"><span id="rank_ss_total-diff"></span></div>
+
+                <div class="stat-label">Total S:</div>
+                <div class="stat-value"><span id="rank_s_total"></span></div>
+                <div class="stat-diff"><span id="rank_s_total-diff"></span></div>
+
+                <div class="stat-label">SSH Count:</div>
+                <div class="stat-value"><span id="rank_ssh"></span></div>
+                <div class="stat-diff"><span id="rank_ssh-diff"></span></div>
+
+                <div class="stat-label">SS Count:</div>
+                <div class="stat-value"><span id="rank_ss"></span></div>
+                <div class="stat-diff"><span id="rank_ss-diff"></span></div>
+
+                <div class="stat-label">SH Count:</div>
+                <div class="stat-value"><span id="rank_sh"></span></div>
+                <div class="stat-diff"><span id="rank_sh-diff"></span></div>
+
+                <div class="stat-label">S Count:</div>
+                <div class="stat-value"><span id="rank_s"></span></div>
+                <div class="stat-diff"><span id="rank_s-diff"></span></div>
+
+                <div class="stat-label">A Count:</div>
+                <div class="stat-value"><span id="rank_a"></span></div>
+                <div class="stat-diff"><span id="rank_a-diff"></span></div>
+
+                <div class="stat-label">B Count:</div>
+                <div class="stat-value"><span id="rank_b"></span></div>
+                <div class="stat-diff"><span id="rank_b-diff"></span></div>
+
+                <div class="stat-label">C Count:</div>
+                <div class="stat-value"><span id="rank_c"></span></div>
+                <div class="stat-diff"><span id="rank_c-diff"></span></div>
+
+                <div class="stat-label">D Count:</div>
+                <div class="stat-value"><span id="rank_d"></span></div>
+                <div class="stat-diff"><span id="rank_d-diff"></span></div>
+
+                <div class="stat-label">Top 10 Daily:</div>
+                <div class="stat-value"><span id="top_10_daily"></span></div>
+                <div class="stat-diff"><span id="top_10_daily-diff"></span></div>
+
+                <div class="stat-label">Top 50 Daily:</div>
+                <div class="stat-value"><span id="top_50_daily"></span></div>
+                <div class="stat-diff"><span id="top_50_daily-diff"></span></div>
+
+                <div class="stat-label">Weekly Best:</div>
+                <div class="stat-value"><span id="weekly_best"></span></div>
+                <div class="stat-diff"><span id="weekly_best-diff"></span></div>
+
+                <div class="stat-label">Weekly Current:</div>
+                <div class="stat-value"><span id="weekly_current"></span></div>
+                <div class="stat-diff"><span id="weekly_current-diff"></span></div>
+
+                <div class="stat-label">Daily Best:</div>
+                <div class="stat-value"><span id="daily_best"></span></div>
+                <div class="stat-diff"><span id="daily_best-diff"></span></div>
+
+                <div class="stat-label">Daily Streak:</div>
+                <div class="stat-value"><span id="daily_streak"></span></div>
+                <div class="stat-diff"><span id="daily_streak-diff"></span></div>
+
+                <div class="stat-label">PP:</div>
+                <div class="stat-value"><span id="pp"></span></div>
+                <div class="stat-diff"><span id="pp-diff"></span></div>
+
+                <div class="stat-label">Total PP:</div>
+                <div class="stat-value"><span id="total_pp"></span></div>
+                <div class="stat-diff"><span id="total_pp-diff"></span></div>
+
+                <div class="stat-label">Accuracy:</div>
+                <div class="stat-value"><span id="accuracy"></span></div>
+                <div class="stat-diff"><span id="accuracy-diff"></span></div>
+
+                <div class="stat-label">Level:</div>
+                <div class="stat-value"><span id="level"></span></div>
+                <div class="stat-diff"><span id="level-diff"></span></div>
+
+                <div class="stat-label">Play Count:</div>
+                <div class="stat-value"><span id="play_count"></span></div>
+                <div class="stat-diff"><span id="play_count-diff"></span></div>
+
+                <div class="stat-label">Play Time:</div>
+                <div class="stat-value"><span id="play_time"></span></div>
+                <div class="stat-diff"><span id="play_time-diff"></span></div>
+
+                <div class="stat-label">Replays Watched:</div>
+                <div class="stat-value"><span id="replays_watched"></span></div>
+                <div class="stat-diff"><span id="replays_watched-diff"></span></div>
+
+                <div class="stat-label">Followers:</div>
+                <div class="stat-value"><span id="followers"></span></div>
+                <div class="stat-diff"><span id="followers-diff"></span></div>
+
+                <div class="stat-label">Top 50s:</div>
+                <div class="stat-value"><span id="top50s"></span></div>
+                <div class="stat-diff"><span id="top50s-diff"></span></div>
+            </div>
+        </div>
+    </div>
+    <script src="menubar.js"></script>
+    <script src="dropdown.js"></script>
+    <script src="timer.js"></script>
+    <script src="stats.js"></script>
+    <script src="windowcontrols.js"></script>
+    <div id="app-border"></div>
+</body>
+</html>
