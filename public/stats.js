@@ -34,7 +34,7 @@ const STAT_META = {
     total_pp:        { type: 'float', decimals: 2, label: "Total PP" },
     clears:          { type: 'integer', label: "Clears" },
     clears_loved:    { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "Clears Loved" },
-    completion:      { type: 'float', decimals: 2, suffix: '%', exclude: ['taiko', 'mania', 'fruits'], label: "Completion" },
+    completion:      { type: 'float', decimals: 4, suffix: '%', exclude: ['taiko', 'mania', 'fruits'], label: "Completion" },
     rank_global_ss:  { type: 'integer', prefix: '#', diff: 'invert', exclude: ['taiko', 'mania', 'fruits'], label: "Global SS Rank" },
     rank_country_ss: { type: 'integer', prefix: '#', diff: 'invert', exclude: ['taiko', 'mania', 'fruits'], label: "Country SS Rank" },
     top50s:          { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "Top 50s" },
@@ -92,12 +92,13 @@ function formatStatValue(value, key) {
         value == null
     ) return 'No Rank';
 
-    if (typeof value === 'number') {
-        if (key === 'accuracy' && value === 100) return `${prefix}100${suffix}`;
+    const numericValue = typeof value === 'number' ? value : Number(value);
+    if (!isNaN(numericValue)) {
+        if (key === 'accuracy' && numericValue === 100) return `${prefix}100${suffix}`;
         const numDecimals = (type === 'float' && typeof decimals === 'number')
-            ? (value === 0 ? 0 : decimals)
+            ? decimals
             : 0;
-        return formatNumber(value, numDecimals, prefix, suffix);
+        return formatNumber(numericValue, numDecimals, prefix, suffix);
     }
 
     return `${value ?? ''}`;
@@ -343,22 +344,19 @@ function getStatLabel(key) {
 function generateStatsGrid() {
     const statsGrid = document.getElementById('stats-grid');
     if (!statsGrid) return;
-    statsGrid.innerHTML = ''; // Clear existing content
+    statsGrid.innerHTML = '';
 
     Object.keys(STAT_META).forEach(key => {
-        // Create label
         const labelDiv = document.createElement('div');
         labelDiv.className = 'stat-label';
         labelDiv.textContent = getStatLabel(key);
 
-        // Create value
         const valueDiv = document.createElement('div');
         valueDiv.className = 'stat-value';
         const valueSpan = document.createElement('span');
         valueSpan.id = key;
         valueDiv.appendChild(valueSpan);
 
-        // Create diff
         const diffDiv = document.createElement('div');
         diffDiv.className = 'stat-diff';
         const diffSpan = document.createElement('span');
@@ -382,7 +380,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             localStorage.setItem('statSettings', JSON.stringify(saved));
         }
     }
-    generateStatsGrid(); // <-- Move this line before applyStatVisibility()
+    generateStatsGrid();
     applyStatVisibility();
     if (typeof window.updateStatCheckboxesForGamemode === 'function') {
         window.updateStatCheckboxesForGamemode(gamemode);
