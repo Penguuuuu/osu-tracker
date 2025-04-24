@@ -25,12 +25,12 @@ const STAT_META = {
     rank_b:          { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "B Count" },
     rank_c:          { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "C Count" },
     rank_d:          { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "D Count" },
-    top_10_daily:    { type: 'integer', label: "Top 10 Daily" },
-    top_50_daily:    { type: 'integer', label: "Top 50 Daily" },
+    top_10p_daily:   { type: 'integer', label: "Top 10% Daily" },
+    top_50p_daily:   { type: 'integer', label: "Top 50% Daily" },
     weekly_best:     { type: 'integer', label: "Weekly Best" },
     weekly_current:  { type: 'integer', label: "Weekly Current" },
     daily_best:      { type: 'integer', label: "Daily Best" },
-    daily_streak:    { type: 'integer', label: "Daily Streak" },
+    daily_current:   { type: 'integer', label: "Daily Current" },
     total_pp:        { type: 'float', decimals: 2, label: "Total PP" },
     clears:          { type: 'integer', label: "Clears" },
     clears_loved:    { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "Clears Loved" },
@@ -68,7 +68,7 @@ function getStatDecimals(key) {
 
 function formatNumber(value, decimals, prefix = '', suffix = '') {
     if (typeof value !== 'number' || isNaN(value)) return '';
-    return `${prefix}${value.toLocaleString(undefined, {
+    return `${prefix}${value.toLocaleString('en-US', {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals
     })}${suffix}`;
@@ -116,10 +116,25 @@ function formatDiffValue(diff, key) {
     const threshold = decimals > 0 ? Math.pow(10, -decimals) : 1;
     if (Math.abs(adjustedDiff) < threshold) return '';
     const sign = adjustedDiff > 0 ? '+' : '';
-    return `${sign}${adjustedDiff.toLocaleString(undefined, {
+    const meta = getStatMeta(key);
+
+    if (key === 'play_time') {
+        const abs = Math.abs(adjustedDiff);
+        const hours = Math.floor(abs / 3600);
+        const minutes = Math.floor((abs % 3600) / 60);
+        const seconds = abs % 60;
+        let result = [];
+        if (hours) result.push(`${hours}h`);
+        if (minutes) result.push(`${minutes}m`);
+        if (seconds || (!hours && !minutes)) result.push(`${seconds}s`);
+        return `${sign}${result.join(' ')}`;
+    }
+
+    const suffix = meta?.suffix || '';
+    return `${sign}${adjustedDiff.toLocaleString('en-US', {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals
-    })}`;
+    })}${suffix}`;
 }
 
 function shouldColorDiffs() {
@@ -216,6 +231,7 @@ async function displayStats(resetCountdown = true) {
             initialStats._mode !== currentMode
         ) {
             resetInitialStats({ ...stats, _uid: currentUid, _mode: currentMode });
+            return;
         }
 
         const enabledStats = getEnabledStats();
@@ -349,7 +365,7 @@ function generateStatsGrid() {
     Object.keys(STAT_META).forEach(key => {
         const labelDiv = document.createElement('div');
         labelDiv.className = 'stat-label';
-        labelDiv.textContent = getStatLabel(key);
+        labelDiv.textContent = getStatLabel(key) + ":";
 
         const valueDiv = document.createElement('div');
         valueDiv.className = 'stat-value';
@@ -368,6 +384,32 @@ function generateStatsGrid() {
         statsGrid.appendChild(diffDiv);
     });
 }
+
+function migrateStatSettings() {
+    const saved = getLocalSetting('statSettings');
+    let changed = false;
+
+    Object.keys(STAT_META).forEach(key => {
+        if (!(key in saved)) {
+            saved[key] = false;
+            changed = true;
+        }
+    });
+
+    Object.keys(saved).forEach(key => {
+        if (!(key in STAT_META) && key !== 'colorDiffs' && key !== 'showTimer' && key !== 'mode') {
+            delete saved[key];
+            changed = true;
+        }
+    });
+
+    if (changed) {
+        localStorage.setItem('statSettings', JSON.stringify(saved));
+    }
+    return saved;
+}
+
+window.migrateStatSettings = migrateStatSettings;
 
 window.addEventListener('DOMContentLoaded', async () => {
     let gamemode = 'osu';

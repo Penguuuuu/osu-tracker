@@ -60,12 +60,12 @@ const getStats = async (uid, mode, clientId, clientSecret) => {
             replays_watched: osu?.statistics?.replays_watched_by_others,
             followers:       osu?.follower_count,
             avatar_url:      osu?.avatar_url,
-            top_10_daily:    osu?.daily_challenge_user_stats?.top_10p_placements,
-            top_50_daily:    osu?.daily_challenge_user_stats?.top_50p_placements,
+            top_10p_daily:   osu?.daily_challenge_user_stats?.top_10p_placements,
+            top_50p_daily:   osu?.daily_challenge_user_stats?.top_50p_placements,
             weekly_best:     osu?.daily_challenge_user_stats?.weekly_streak_best,
             weekly_current:  osu?.daily_challenge_user_stats?.weekly_streak_current,
             daily_best:      osu?.daily_challenge_user_stats?.daily_streak_best,
-            daily_streak:    osu?.daily_challenge_user_stats?.top_50p_placements,
+            daily_current:   osu?.daily_challenge_user_stats?.daily_streak_current,
 
             // Amayakase Stats
             rank_b:          amayakase?.b,

@@ -25,6 +25,11 @@ async function loadStatSettings() {
     } else {
         saved = JSON.parse(localStorage.getItem('statSettings') || '{}');
     }
+
+    if (window.migrateStatSettings) {
+        saved = window.migrateStatSettings();
+    }
+
     document.querySelectorAll('#stat-settings input[type="checkbox"][value]').forEach(cb => {
         cb.checked = saved[cb.value] === true;
     });
@@ -165,10 +170,19 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('color-diffs-toggle')?.addEventListener('change', () => {
-        if (typeof window.saveStatSettings === 'function') window.saveStatSettings();
+        if (typeof window.saveStatSettings === 'function') {
+            window.saveStatSettings();
+        }
+        if (window.rerenderStatDiffs) window.rerenderStatDiffs();
     });
     document.getElementById('show-timer-toggle')?.addEventListener('change', () => {
-        if (typeof window.saveStatSettings === 'function') window.saveStatSettings();
+        if (typeof window.saveStatSettings === 'function') {
+            window.saveStatSettings();
+        }
+
+        if (window.timer?.updateFetchTimerDisplay) {
+            window.timer.updateFetchTimerDisplay();
+        }
     });
 
     setActiveMenu('home-btn');
