@@ -221,9 +221,16 @@ hr {
     flex-direction: column;
 }
 
+#daily-weekly-timer {
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    align-self: flex-start;
+}
+
 #stats-grid {
     display: grid;
-    grid-template-columns: auto 178px 178px;
+    grid-template-columns: auto 160px 160px;
     gap: 4px;
 }
 
@@ -231,6 +238,7 @@ hr {
     height: 20px;
     display: flex;
     align-items: center;
+    white-space: nowrap;
 }
 
 .stat-value, .stat-diff {
@@ -246,7 +254,7 @@ hr {
 
 #stat-settings {
     column-count: 2;
-    column-gap: 6px;
+    column-gap: 14px;
 }
 
 #stat-settings label,

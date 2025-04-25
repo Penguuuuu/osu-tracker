@@ -16,6 +16,24 @@ const DISPLAY_OPTIONS = [
             if (typeof window.saveStatSettings === 'function') window.saveStatSettings();
             if (window.timer?.updateFetchTimerDisplay) window.timer.updateFetchTimerDisplay();
         }
+    },
+    {
+        id: 'show-daily-timer-toggle',
+        label: 'Show daily timer',
+        default: false,
+        handler: () => {
+            if (typeof window.saveStatSettings === 'function') window.saveStatSettings();
+            if (window.updateDailyTimerDisplay) window.updateDailyTimerDisplay();
+        }
+    },
+    {
+        id: 'show-weekly-timer-toggle',
+        label: 'Show weekly timer',
+        default: false,
+        handler: () => {
+            if (typeof window.saveStatSettings === 'function') window.saveStatSettings();
+            if (window.updateWeeklyTimerDisplay) window.updateWeeklyTimerDisplay();
+        }
     }
 ];
 
@@ -84,6 +102,8 @@ async function loadStatSettings() {
     let saved = {};
     if (window.osuAPI?.getStatSettings) {
         saved = await window.osuAPI.getStatSettings() || {};
+    } else {
+        saved = JSON.parse(localStorage.getItem('statSettings') || '{}');
     }
 
     document.querySelectorAll('#stat-settings input[type="checkbox"][value]').forEach(cb => {
@@ -91,6 +111,8 @@ async function loadStatSettings() {
     });
     document.getElementById('color-diffs-toggle').checked = saved.colorDiffs !== false;
     document.getElementById('show-timer-toggle').checked = saved.showTimer !== false;
+    document.getElementById('show-daily-timer-toggle').checked = saved.showDailyTimer !== false;
+    document.getElementById('show-weekly-timer-toggle').checked = saved.showWeeklyTimer !== false;
 
     let gamemode = 'osu';
     if (window.osuAPI?.getUserConfig) {
@@ -120,16 +142,13 @@ function saveStatSettings() {
     });
     settings.colorDiffs = document.getElementById('color-diffs-toggle').checked;
     settings.showTimer = document.getElementById('show-timer-toggle').checked;
+    settings.showDailyTimer = document.getElementById('show-daily-timer-toggle').checked;
+    settings.showWeeklyTimer = document.getElementById('show-weekly-timer-toggle').checked;
 
     if (window.osuAPI?.saveStatSettings) {
         window.osuAPI.saveStatSettings(settings);
     }
     localStorage.setItem('statSettings', JSON.stringify(settings));
-
-    if (typeof window.applyStatVisibility === 'function') {
-        window.applyStatVisibility();
-    }
-    if (window.rerenderStatDiffs) window.rerenderStatDiffs();
 }
 
 window.saveStatSettings = saveStatSettings;
@@ -141,12 +160,11 @@ function setActiveMenu(btnId) {
     });
 }
 
-function onDisplayOptionChange() {
-    window.saveStatSettings?.();
-    window.loadStatSettings?.();
-    window.applyStatVisibility?.();
-    window.rerenderStatDiffs?.();
-    window.timer?.updateFetchTimerDisplay?.();
+function onDisplayOptionChange(e) {
+    const opt = DISPLAY_OPTIONS.find(o => o.id === e.target.id);
+    if (opt && typeof opt.handler === 'function') {
+        opt.handler();
+    }
 }
 
 function setupDisplayOptions() {
@@ -221,9 +239,40 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    getById('settings-save-btn')?.addEventListener('click', () => {
+        const dropdown = document.getElementById('settings-gamemode-dropdown');
+        const gamemode = dropdown?.dataset.value || 'osu';
+        window.setCurrentGamemode(gamemode);
+        if (typeof window.updateStatCheckboxesForGamemode === 'function') {
+            window.updateStatCheckboxesForGamemode(gamemode);
+        }
+        if (typeof window.applyStatVisibility === 'function') {
+            window.applyStatVisibility();
+        }
+        saveStatSettings();
+        if (window.rerenderStatDiffs) window.rerenderStatDiffs();
+    });
+
+    document.getElementById('settings-gamemode')?.addEventListener('change', (e) => {
+        updateStatCheckboxesForGamemode(e.target.value);
+    });
+
     const gamemodeDropdown = document.getElementById('settings-gamemode-dropdown');
     gamemodeDropdown?.addEventListener('gamemodechange', (e) => {
-        applyGamemodeSettings(e.detail);
+        const gamemode = e.detail;
+        if (typeof window.setCurrentGamemode === 'function') {
+            window.setCurrentGamemode(gamemode);
+        }
+        if (typeof window.updateStatCheckboxesForGamemode === 'function') {
+            window.updateStatCheckboxesForGamemode(gamemode);
+        }
+        if (typeof window.applyStatVisibility === 'function') {
+            window.applyStatVisibility();
+        }
+        if (typeof window.saveStatSettings === 'function') {
+            window.saveStatSettings();
+        }
+        if (window.rerenderStatDiffs) window.rerenderStatDiffs();
     });
 
     setupDisplayOptions();

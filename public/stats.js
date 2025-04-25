@@ -149,6 +149,7 @@ function getDiffColorClass(diff, key) {
     let adjustedDiff = getAdjustedDiff(diff, key);
     if (key === 'play_time') {
         if (adjustedDiff > 0) return 'diff-green';
+        if (adjustedDiff < 0) return 'diff-red';
         return '';
     }
     if (adjustedDiff > 0) return 'diff-green';
