@@ -1,3 +1,24 @@
+const DISPLAY_OPTIONS = [
+    {
+        id: 'color-diffs-toggle',
+        label: 'Colored stat differences',
+        default: true,
+        handler: () => {
+            if (typeof window.saveStatSettings === 'function') window.saveStatSettings();
+            if (window.rerenderStatDiffs) window.rerenderStatDiffs();
+        }
+    },
+    {
+        id: 'show-timer-toggle',
+        label: 'Show fetch timer',
+        default: true,
+        handler: () => {
+            if (typeof window.saveStatSettings === 'function') window.saveStatSettings();
+            if (window.timer?.updateFetchTimerDisplay) window.timer.updateFetchTimerDisplay();
+        }
+    }
+];
+
 const MODAL_IDS = [
     'settings-modal', 
     'login-modal', 
@@ -18,12 +39,51 @@ function setModalDisplay(modalId, show) {
     if (statsDiv) statsDiv.style.display = anyModalVisible ? 'none' : '';
 }
 
+function applyGamemodeSettings(gamemode) {
+    if (typeof window.setCurrentGamemode === 'function') {
+        window.setCurrentGamemode(gamemode);
+    }
+    if (typeof window.updateStatCheckboxesForGamemode === 'function') {
+        window.updateStatCheckboxesForGamemode(gamemode);
+    }
+    if (typeof window.applyStatVisibility === 'function') {
+        window.applyStatVisibility();
+    }
+    if (typeof window.saveStatSettings === 'function') {
+        window.saveStatSettings();
+    }
+    if (window.rerenderStatDiffs) window.rerenderStatDiffs();
+}
+
+function updateStatCheckboxesForGamemode(gamemode) {
+    const saved = JSON.parse(localStorage.getItem('statSettings') || '{}');
+    let changed = false;
+    document.querySelectorAll('#stat-settings input[type="checkbox"][value]').forEach(cb => {
+        const label = cb.parentElement;
+        const meta = window.STAT_META?.[cb.value];
+        if (meta?.exclude && meta.exclude.includes(gamemode)) {
+            label.classList.add('stat-disabled');
+            cb.disabled = true;
+            if (cb.checked) {
+                cb.checked = false;
+                saved[cb.value] = false;
+                changed = true;
+            }
+        } else {
+            label.classList.remove('stat-disabled');
+            cb.disabled = false;
+        }
+    });
+    if (changed) {
+        localStorage.setItem('statSettings', JSON.stringify(saved));
+    }
+}
+window.updateStatCheckboxesForGamemode = updateStatCheckboxesForGamemode;
+
 async function loadStatSettings() {
     let saved = {};
     if (window.osuAPI?.getStatSettings) {
         saved = await window.osuAPI.getStatSettings() || {};
-    } else {
-        saved = JSON.parse(localStorage.getItem('statSettings') || '{}');
     }
 
     document.querySelectorAll('#stat-settings input[type="checkbox"][value]').forEach(cb => {
@@ -65,12 +125,56 @@ function saveStatSettings() {
         window.osuAPI.saveStatSettings(settings);
     }
     localStorage.setItem('statSettings', JSON.stringify(settings));
+
+    if (typeof window.applyStatVisibility === 'function') {
+        window.applyStatVisibility();
+    }
+    if (window.rerenderStatDiffs) window.rerenderStatDiffs();
 }
+
+window.saveStatSettings = saveStatSettings;
+window.loadStatSettings = loadStatSettings;
 
 function setActiveMenu(btnId) {
     document.querySelectorAll('.menu-btn').forEach(btn => {
         btn.classList.toggle('active', btn.id === btnId);
     });
+}
+
+function onDisplayOptionChange() {
+    window.saveStatSettings?.();
+    window.loadStatSettings?.();
+    window.applyStatVisibility?.();
+    window.rerenderStatDiffs?.();
+    window.timer?.updateFetchTimerDisplay?.();
+}
+
+function setupDisplayOptions() {
+    const customizationSettings = document.getElementById('customization-settings');
+    if (customizationSettings) {
+        const p = customizationSettings.querySelector('p');
+        if (p) {
+            p.querySelectorAll('label').forEach(label => label.remove());
+            DISPLAY_OPTIONS.forEach(opt => {
+                const label = document.createElement('label');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = opt.id;
+                checkbox.checked = opt.default;
+                checkbox.addEventListener('change', onDisplayOptionChange);
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(' ' + opt.label));
+                p.appendChild(label);
+            });
+        }
+    }
+}
+
+function handleCheckboxChange() {
+    if (typeof window.saveStatSettings === 'function') window.saveStatSettings();
+    if (typeof window.applyStatVisibility === 'function') window.applyStatVisibility();
+    if (window.rerenderStatDiffs) window.rerenderStatDiffs();
+    if (window.timer?.updateFetchTimerDisplay) window.timer.updateFetchTimerDisplay();
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -117,57 +221,12 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    getById('settings-save-btn')?.addEventListener('click', () => {
-        const dropdown = document.getElementById('settings-gamemode-dropdown');
-        const gamemode = dropdown?.dataset.value || 'osu';
-        window.setCurrentGamemode(gamemode);
-        if (typeof window.updateStatCheckboxesForGamemode === 'function') {
-            window.updateStatCheckboxesForGamemode(gamemode);
-        }
-        if (typeof window.applyStatVisibility === 'function') {
-            window.applyStatVisibility();
-        }
-        saveStatSettings();
-        if (window.rerenderStatDiffs) window.rerenderStatDiffs();
-    });
-
-    document.getElementById('settings-gamemode')?.addEventListener('change', (e) => {
-        updateStatCheckboxesForGamemode(e.target.value);
-    });
-
     const gamemodeDropdown = document.getElementById('settings-gamemode-dropdown');
     gamemodeDropdown?.addEventListener('gamemodechange', (e) => {
-        const gamemode = e.detail;
-        if (typeof window.setCurrentGamemode === 'function') {
-            window.setCurrentGamemode(gamemode);
-        }
-        if (typeof window.updateStatCheckboxesForGamemode === 'function') {
-            window.updateStatCheckboxesForGamemode(gamemode);
-        }
-        if (typeof window.applyStatVisibility === 'function') {
-            window.applyStatVisibility();
-        }
-        if (typeof window.saveStatSettings === 'function') {
-            window.saveStatSettings();
-        }
-        if (window.rerenderStatDiffs) window.rerenderStatDiffs();
+        applyGamemodeSettings(e.detail);
     });
 
-    document.getElementById('color-diffs-toggle')?.addEventListener('change', () => {
-        if (typeof window.saveStatSettings === 'function') {
-            window.saveStatSettings();
-        }
-        if (window.rerenderStatDiffs) window.rerenderStatDiffs();
-    });
-    document.getElementById('show-timer-toggle')?.addEventListener('change', () => {
-        if (typeof window.saveStatSettings === 'function') {
-            window.saveStatSettings();
-        }
-
-        if (window.timer?.updateFetchTimerDisplay) {
-            window.timer.updateFetchTimerDisplay();
-        }
-    });
+    setupDisplayOptions();
 
     setActiveMenu('home-btn');
 });

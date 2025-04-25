@@ -17,6 +17,7 @@
     /*--main-bg:        #738C99; */
     --main-border:    #2f2f37;
     --main-bar:       #294A7AFF;
+    --menu-bg :       #242424FF;
     --frame-bg:       #294A7A8A;
     --frame-bg-hover: #4296FA66;
     --window-bg:      #0F0F0FF0;
@@ -153,7 +154,7 @@ hr {
 
 #main-content::-webkit-scrollbar {
     width: 8px;
-    background: #242424FF;
+    background: var(--menu-bg);
 }
 
 #main-content::-webkit-scrollbar-thumb {
@@ -168,7 +169,7 @@ hr {
 /* MENU --------------------------------------------------------- */
 #menu-bar {
     padding: 1px;
-    background: #242424FF;
+    background: var(--menu-bg);
     -webkit-app-region: drag;
     user-select: none;
     position: sticky;

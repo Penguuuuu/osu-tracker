@@ -31,7 +31,7 @@ const STAT_META = {
     weekly_current:  { type: 'integer', label: "Weekly Current" },
     daily_best:      { type: 'integer', label: "Daily Best" },
     daily_current:   { type: 'integer', label: "Daily Current" },
-    total_pp:        { type: 'float', decimals: 2, label: "Total PP" },
+    total_pp:        { type: 'float', decimals: 2, label: "Total PP", exclude: ['taiko', 'mania', 'fruits'] },
     clears:          { type: 'integer', label: "Clears" },
     clears_loved:    { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "Clears Loved" },
     completion:      { type: 'float', decimals: 4, suffix: '%', exclude: ['taiko', 'mania', 'fruits'], label: "Completion" },
@@ -48,6 +48,7 @@ const prevStatDiffs = {};
 
 let initialStats = null;
 let isFetchingStats = false;
+let firstFetchAfterReset = true;
 
 function getLocalSetting(key, fallback = {}) {
     try {
@@ -87,17 +88,17 @@ function formatStatValue(value, key) {
     }
 
     if (type === 'string') return `${prefix}${value ?? ''}${suffix}`;
-    if (
-        ['rank_global', 'rank_country', 'rank_global_ss', 'rank_country_ss', 'score_rank'].includes(key) &&
-        value == null
-    ) return 'No Rank';
+    if (meta.prefix === '#' && (value == null || value === 0)) return 'No Rank';
+
+    if (key === 'pp') {
+        if (value == null || isNaN(Number(value)) || Number(value) === 0) return '0';
+        return formatNumber(Number(value), 2, prefix, suffix);
+    }
 
     const numericValue = typeof value === 'number' ? value : Number(value);
     if (!isNaN(numericValue)) {
         if (key === 'accuracy' && numericValue === 100) return `${prefix}100${suffix}`;
-        const numDecimals = (type === 'float' && typeof decimals === 'number')
-            ? decimals
-            : 0;
+        const numDecimals = (type === 'float' && typeof decimals === 'number') ? decimals : 0;
         return formatNumber(numericValue, numDecimals, prefix, suffix);
     }
 
@@ -146,6 +147,10 @@ function getDiffColorClass(diff, key) {
     if (!shouldColorDiffs()) return '';
     if (typeof diff !== 'number') return '';
     let adjustedDiff = getAdjustedDiff(diff, key);
+    if (key === 'play_time') {
+        if (adjustedDiff > 0) return 'diff-green';
+        return '';
+    }
     if (adjustedDiff > 0) return 'diff-green';
     if (adjustedDiff < 0) return 'diff-red';
     return '';
@@ -184,6 +189,7 @@ function updateStatElement(key, value, diff) {
 
 function resetInitialStats(stats) {
     initialStats = { ...stats };
+    firstFetchAfterReset = true;
 }
 
 async function updateAvatarAndUsername(stats) {
@@ -238,7 +244,7 @@ async function displayStats(resetCountdown = true) {
             .filter(([key]) => enabledStats.includes(key))
             .map(([key, value]) => {
                 let diff;
-                if (typeof value === 'number' && typeof initialStats[key] === 'number') {
+                if (!firstFetchAfterReset && typeof value === 'number' && typeof initialStats[key] === 'number') {
                     diff = value - initialStats[key];
                 }
                 return { key, value, diff };
@@ -256,6 +262,7 @@ async function displayStats(resetCountdown = true) {
             window.timer.nextFetchTimestamp = Date.now() + window.timer.fetchInterval * 1000;
             window.timer.updateFetchTimerDisplay(`Next fetch in ${window.timer.fetchInterval}s`);
         }
+        firstFetchAfterReset = false;
     }
 }
 
@@ -337,20 +344,6 @@ function rerenderStatDiffs() {
     });
 }
 window.rerenderStatDiffs = rerenderStatDiffs;
-
-function updateStatCheckboxesForGamemode(gamemode) {
-    document.querySelectorAll('#stat-settings input[type="checkbox"][value]').forEach(cb => {
-        const label = cb.parentElement;
-        const meta = STAT_META?.[cb.value];
-        if (meta?.exclude && meta.exclude.includes(gamemode)) {
-            label.classList.add('stat-disabled');
-            cb.disabled = true;
-        } else {
-            label.classList.remove('stat-disabled');
-            cb.disabled = false;
-        }
-    });
-}
 
 function getStatLabel(key) {
     return STAT_META[key]?.label || key;
@@ -436,13 +429,13 @@ function generateStatSettingsCheckboxes() {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-    migrateStatSettings();
-    generateStatSettingsCheckboxes();
+    window.migrateStatSettings();
+    window.generateStatSettingsCheckboxes();
     let gamemode = 'osu';
     if (window.osuAPI?.getUserConfig) {
         const config = await window.osuAPI.getUserConfig();
         gamemode = config.mode || 'osu';
-        const saved = JSON.parse(localStorage.getItem('statSettings') || '{}');
+        const saved = await window.osuAPI.getStatSettings?.() || {};
         if (saved.mode !== gamemode) {
             saved.mode = gamemode;
             localStorage.setItem('statSettings', JSON.stringify(saved));
