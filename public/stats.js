@@ -1,44 +1,46 @@
 const STAT_META = {
-    rank_global:     { type: 'integer', prefix: '#', diff: 'invert', label: "Global Rank" },
-    rank_country:    { type: 'integer', prefix: '#', diff: 'invert', label: "Country Rank" },
-    pp:              { type: 'float', decimals: 2, label: "PP" },
-    score_total:     { type: 'integer', label: "Total Score" },
-    score_ranked:    { type: 'integer', label: "Ranked Score" },
-    accuracy:        { type: 'float', decimals: 5, suffix: '%', label: "Accuracy" },
-    level:           { type: 'float', decimals: 5, label: "Level" },
-    play_count:      { type: 'integer', label: "Play Count" },
-    play_time:       { type: 'integer', label: "Play Time" },
-    count_hits:      { type: 'integer', label: "Total Hits" },
-    count_300:       { type: 'integer', label: "300s" },
-    count_100:       { type: 'integer', label: "100s" },
-    count_50:        { type: 'integer', label: "50s" },
-    count_0:         { type: 'integer', label: "Misses" },
-    replays_watched: { type: 'integer', label: "Replays Watched" },
-    followers:       { type: 'integer', label: "Followers" },
-    rank_ssh:        { type: 'integer', label: "SSH Count" },
-    rank_ss:         { type: 'integer', label: "SS Count" },
-    rank_sh:         { type: 'integer', label: "SH Count" },
-    rank_s:          { type: 'integer', label: "S Count" },
-    rank_a:          { type: 'integer', label: "A Count" },
-    rank_s_total:    { type: 'integer', label: "Total S" },
-    rank_ss_total:   { type: 'integer', label: "Total SS" },
-    rank_b:          { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "B Count" },
-    rank_c:          { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "C Count" },
-    rank_d:          { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "D Count" },
-    top_10p_daily:   { type: 'integer', label: "Top 10% Daily" },
-    top_50p_daily:   { type: 'integer', label: "Top 50% Daily" },
-    weekly_best:     { type: 'integer', label: "Weekly Best" },
-    weekly_current:  { type: 'integer', label: "Weekly Current" },
-    daily_best:      { type: 'integer', label: "Daily Best" },
-    daily_current:   { type: 'integer', label: "Daily Current" },
-    total_pp:        { type: 'float', decimals: 2, label: "Total PP", exclude: ['taiko', 'mania', 'fruits'] },
-    clears:          { type: 'integer', label: "Clears" },
-    clears_loved:    { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "Clears Loved" },
-    completion:      { type: 'float', decimals: 4, suffix: '%', exclude: ['taiko', 'mania', 'fruits'], label: "Completion" },
-    rank_global_ss:  { type: 'integer', prefix: '#', diff: 'invert', exclude: ['taiko', 'mania', 'fruits'], label: "Global SS Rank" },
-    rank_country_ss: { type: 'integer', prefix: '#', diff: 'invert', exclude: ['taiko', 'mania', 'fruits'], label: "Country SS Rank" },
-    top50s:          { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "Top 50s" },
-    score_rank:      { type: 'integer', prefix: '#', diff: 'invert', label: "Score Rank" },
+    rank_global:        { type: 'integer', prefix: '#', diff: 'invert', label: "Global Rank" },
+    rank_country:       { type: 'integer', prefix: '#', diff: 'invert', label: "Country Rank" },
+    pp:                 { type: 'float', decimals: 2, label: "PP" },
+    score_total:        { type: 'integer', label: "Total Score" },
+    score_ranked:       { type: 'integer', label: "Ranked Score" },
+    accuracy:           { type: 'float', decimals: 5, suffix: '%', label: "Accuracy" },
+    level:              { type: 'float', decimals: 5, label: "Level" },
+    play_count:         { type: 'integer', label: "Play Count" },
+    play_time:          { type: 'integer', label: "Play Time" },
+    count_hits:         { type: 'integer', label: "Total Hits" },
+    count_300:          { type: 'integer', label: "300s" },
+    count_100:          { type: 'integer', label: "100s" },
+    count_50:           { type: 'integer', label: "50s" },
+    count_0:            { type: 'integer', label: "Misses" },
+    replays_watched:    { type: 'integer', label: "Replays Watched" },
+    followers:          { type: 'integer', label: "Followers" },
+    rank_ssh:           { type: 'integer', label: "SSH Count" },
+    rank_ss:            { type: 'integer', label: "SS Count" },
+    rank_sh:            { type: 'integer', label: "SH Count" },
+    rank_s:             { type: 'integer', label: "S Count" },
+    rank_a:             { type: 'integer', label: "A Count" },
+    rank_s_total:       { type: 'integer', label: "Total S" },
+    rank_ss_total:      { type: 'integer', label: "Total SS" },
+    rank_b:             { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "B Count" },
+    rank_c:             { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "C Count" },
+    rank_d:             { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "D Count" },
+    top_10p_daily:      { type: 'integer', label: "Top 10% Daily" },
+    top_50p_daily:      { type: 'integer', label: "Top 50% Daily" },
+    weekly_best:        { type: 'integer', label: "Weekly Best" },
+    weekly_current:     { type: 'integer', label: "Weekly Current" },
+    daily_best:         { type: 'integer', label: "Daily Best" },
+    daily_current:      { type: 'integer', label: "Daily Current" },
+    total_pp:           { type: 'float', decimals: 2, label: "Total PP", exclude: ['taiko', 'mania', 'fruits'] },
+    clears:             { type: 'integer', label: "Clears" },
+    clears_loved:       { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "Clears Loved" },
+    completion:         { type: 'float', decimals: 4, suffix: '%', exclude: ['taiko', 'mania', 'fruits'], label: "Completion" },
+    rank_global_ss:     { type: 'integer', prefix: '#', diff: 'invert', exclude: ['taiko', 'mania', 'fruits'], label: "Global SS Rank" },
+    rank_country_ss:    { type: 'integer', prefix: '#', diff: 'invert', exclude: ['taiko', 'mania', 'fruits'], label: "Country SS Rank" },
+    top50s:             { type: 'integer', exclude: ['taiko', 'mania', 'fruits'], label: "Top 50s" },
+    score_rank:         { type: 'integer', prefix: '#', diff: 'invert', label: "Score Rank" },
+    score_to_next_rank: { type: 'integer', label: "Score to Next Rank" },
+    score_to_prev_rank: { type: 'integer', label: "Score to Prev Rank" },
 };
 
 window.STAT_META = STAT_META;
@@ -89,6 +91,15 @@ function formatStatValue(value, key) {
 
     if (type === 'string') return `${prefix}${value ?? ''}${suffix}`;
     if (meta.prefix === '#' && (value == null || value === 0)) return 'No Rank';
+
+    if (key === 'score_to_next_rank') {
+        const scoreRank = prevStatValues['score_rank'];
+        if (scoreRank === 1 && (value == null || value === '')) {
+            return 'Nobody Ahead';
+        }
+        const displayValue = (typeof value === 'number' && value <= 0) ? 0 : value;
+        return formatNumber(displayValue, 0, prefix, suffix);
+    }
 
     if (key === 'pp') {
         if (value == null || isNaN(Number(value)) || Number(value) === 0) return '0';
@@ -147,6 +158,13 @@ function getDiffColorClass(diff, key) {
     if (!shouldColorDiffs()) return '';
     if (typeof diff !== 'number') return '';
     let adjustedDiff = getAdjustedDiff(diff, key);
+
+    if (key === 'score_to_next_rank') {
+        if (adjustedDiff < 0) return 'diff-green';
+        if (adjustedDiff > 0) return 'diff-red';
+        return '';
+    }
+
     if (key === 'play_time') {
         if (adjustedDiff > 0) return 'diff-green';
         if (adjustedDiff < 0) return 'diff-red';
@@ -170,6 +188,20 @@ function updateStatElement(key, value, diff) {
     if (!el) return;
 
     const formattedValue = formatStatValue(value, key);
+
+    if (key === 'score_rank') {
+        const scoreToNextDiffEl = document.getElementById('score_to_next_rank-diff');
+        if (scoreToNextDiffEl) {
+            scoreToNextDiffEl.textContent = '';
+            prevStatDiffs['score_to_next_rank'] = '';
+        }
+        const scoreToPrevDiffEl = document.getElementById('score_to_prev_rank-diff');
+        if (scoreToPrevDiffEl) {
+            scoreToPrevDiffEl.textContent = '';
+            prevStatDiffs['score_to_prev_rank'] = '';
+        }
+    }
+
     if (prevStatValues[key] !== formattedValue) {
         el.textContent = formattedValue;
         prevStatValues[key] = formattedValue;
@@ -229,6 +261,9 @@ async function displayStats(resetCountdown = true) {
         if (!stats) return;
         updateAvatarAndUsername(stats);
         
+        prevStatValues['score_rank_prev'] = stats.score_rank_prev;
+        prevStatValues['score_rank_next'] = stats.score_rank_next;
+
         const config = await window.osuAPI.getUserConfig?.();
         const currentUid = config?.uid;
         const currentMode = config?.mode;
@@ -429,6 +464,30 @@ function generateStatSettingsCheckboxes() {
     });
 }
 
+function setupScoreRankHover() {
+    ['score_to_prev_rank', 'score_to_next_rank'].forEach(key => {
+        const valueEl = document.getElementById(key);
+        if (!valueEl) return;
+        const container = valueEl.closest('.stat-value');
+        if (!container) return;
+        let prevValue = '';
+        container.addEventListener('mouseenter', () => {
+            prevValue = valueEl.textContent;
+            let name = '';
+            if (key === 'score_to_prev_rank' && prevStatValues['score_rank_prev']) {
+                name = prevStatValues['score_rank_prev'];
+            }
+            if (key === 'score_to_next_rank' && prevStatValues['score_rank_next']) {
+                name = prevStatValues['score_rank_next'];
+            }
+            valueEl.textContent = name || '';
+        });
+        container.addEventListener('mouseleave', () => {
+            valueEl.textContent = prevValue;
+        });
+    });
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
     window.migrateStatSettings();
     window.generateStatSettingsCheckboxes();
@@ -449,6 +508,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
     await displayStats(true);
     window.timer.startPolling(displayStats);
+    setupScoreRankHover();
 }, { once: true });
 
 window.updateFetchTimerDisplay = window.timer.updateFetchTimerDisplay;

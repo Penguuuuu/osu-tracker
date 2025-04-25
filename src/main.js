@@ -71,7 +71,7 @@ app.whenReady().then(async () => {
     const windowState = await getWindowState();
 
     win = new BrowserWindow({
-        width: 450,
+        width: 460,
         height: 600,
         x: windowState.x,
         y: windowState.y,

@@ -33,69 +33,83 @@ const getStats = async (uid, mode, clientId, clientSecret) => {
             axios.get(`${RESPEKTIVE_API_URL}${uid}?mode=${mode}`)
         ]);
 
+        let score_to_next_rank = null;
+        if (respektive?.rank === 1) {
+            score_to_next_rank = null;
+        } else if (respektive?.next?.score && osu?.statistics?.ranked_score) {
+            score_to_next_rank = respektive.next.score - osu.statistics.ranked_score;
+        }
+
+        let score_to_prev_rank = null;
+        if (respektive?.prev?.score && osu?.statistics?.ranked_score) {
+            score_to_prev_rank = osu.statistics.ranked_score - respektive.prev.score;
+        }
+
         return {
             // osu! Stats
-            username:        osu?.username,
-            country:         osu?.country_code,
-            rank_global:     osu?.statistics?.global_rank,
-            rank_country:    osu?.statistics?.country_rank,
-            pp:              osu?.statistics?.pp,
-            score_ranked:    osu?.statistics?.ranked_score,
-            score_total:     osu?.statistics?.total_score,
-            accuracy:        osu?.statistics?.hit_accuracy,
-            rank_ssh:        osu?.statistics?.grade_counts?.ssh,
-            rank_ss:         osu?.statistics?.grade_counts?.ss,
-            rank_sh:         osu?.statistics?.grade_counts?.sh,
-            rank_s:          osu?.statistics?.grade_counts?.s,
-            rank_a:          osu?.statistics?.grade_counts?.a,
-            rank_s_total:    osu?.statistics?.grade_counts?.s + osu?.statistics?.grade_counts?.sh,
-            rank_ss_total:   osu?.statistics?.grade_counts?.ss + osu?.statistics?.grade_counts?.ssh,
-            play_count:      osu?.statistics?.play_count,
-            play_time:       osu?.statistics?.play_time,
-            count_hits:      osu?.statistics?.total_hits,
-            count_300:       osu?.statistics?.count_300,
-            count_100:       osu?.statistics?.count_100,
-            count_50:        osu?.statistics?.count_50,
-            count_0:         osu?.statistics?.count_miss,
-            replays_watched: osu?.statistics?.replays_watched_by_others,
-            followers:       osu?.follower_count,
-            avatar_url:      osu?.avatar_url,
-            top_10p_daily:   osu?.daily_challenge_user_stats?.top_10p_placements,
-            top_50p_daily:   osu?.daily_challenge_user_stats?.top_50p_placements,
-            weekly_best:     osu?.daily_challenge_user_stats?.weekly_streak_best,
-            weekly_current:  osu?.daily_challenge_user_stats?.weekly_streak_current,
-            daily_best:      osu?.daily_challenge_user_stats?.daily_streak_best,
-            daily_current:   osu?.daily_challenge_user_stats?.daily_streak_current,
+            username:          osu?.username,
+            country:            osu?.country_code,
+            rank_global:        osu?.statistics?.global_rank,
+            rank_country:       osu?.statistics?.country_rank,
+            pp:                 osu?.statistics?.pp,
+            score_ranked:       osu?.statistics?.ranked_score,
+            score_total:        osu?.statistics?.total_score,
+            accuracy:           osu?.statistics?.hit_accuracy,
+            rank_ssh:           osu?.statistics?.grade_counts?.ssh,
+            rank_ss:            osu?.statistics?.grade_counts?.ss,
+            rank_sh:            osu?.statistics?.grade_counts?.sh,
+            rank_s:             osu?.statistics?.grade_counts?.s,
+            rank_a:             osu?.statistics?.grade_counts?.a,
+            rank_s_total:       osu?.statistics?.grade_counts?.s + osu?.statistics?.grade_counts?.sh,
+            rank_ss_total:      osu?.statistics?.grade_counts?.ss + osu?.statistics?.grade_counts?.ssh,
+            play_count:         osu?.statistics?.play_count,
+            play_time:          osu?.statistics?.play_time,
+            count_hits:         osu?.statistics?.total_hits,
+            count_300:          osu?.statistics?.count_300,
+            count_100:          osu?.statistics?.count_100,
+            count_50:           osu?.statistics?.count_50,
+            count_0:            osu?.statistics?.count_miss,
+            replays_watched:    osu?.statistics?.replays_watched_by_others,
+            followers:          osu?.follower_count,
+            avatar_url:         osu?.avatar_url,
+            top_10p_daily:      osu?.daily_challenge_user_stats?.top_10p_placements,
+            top_50p_daily:      osu?.daily_challenge_user_stats?.top_50p_placements,
+            weekly_best:        osu?.daily_challenge_user_stats?.weekly_streak_best,
+            weekly_current:     osu?.daily_challenge_user_stats?.weekly_streak_current,
+            daily_best:         osu?.daily_challenge_user_stats?.daily_streak_best,
+            daily_current:      osu?.daily_challenge_user_stats?.daily_streak_current,
 
             // Amayakase Stats
-            rank_b:          amayakase?.b,
-            rank_c:          amayakase?.c,
-            rank_d:          amayakase?.d,
-            total_pp:        amayakase?.total_pp,
-            clears:          mode === 'osu'
-                                ? Number(amayakase?.profile_clears ?? 0)
-                                : (
-                                    (Number(osu?.statistics?.grade_counts?.ssh ?? 0)) +
-                                    (Number(osu?.statistics?.grade_counts?.ss ?? 0)) +
-                                    (Number(osu?.statistics?.grade_counts?.sh ?? 0)) +
-                                    (Number(osu?.statistics?.grade_counts?.s ?? 0)) +
-                                    (Number(osu?.statistics?.grade_counts?.a ?? 0))
-                                ),
-            clears_loved:    Number(amayakase?.clears ?? 0),
-            completion:      amayakase?.completion,
-            rank_global_ss:  amayakase?.global_ss_rank,
-            rank_country_ss: amayakase?.country_ss_rank,
-            top50s:          amayakase?.top50s,
+            rank_b:             amayakase?.b,
+            rank_c:             amayakase?.c,
+            rank_d:             amayakase?.d,
+            total_pp:           amayakase?.total_pp,
+            clears:             mode === 'osu'
+                                    ? Number(amayakase?.profile_clears ?? 0)
+                                    : (
+                                        (Number(osu?.statistics?.grade_counts?.ssh ?? 0)) +
+                                        (Number(osu?.statistics?.grade_counts?.ss ?? 0)) +
+                                        (Number(osu?.statistics?.grade_counts?.sh ?? 0)) +
+                                        (Number(osu?.statistics?.grade_counts?.s ?? 0)) +
+                                        (Number(osu?.statistics?.grade_counts?.a ?? 0))
+                                    ),
+            clears_loved:       Number(amayakase?.clears ?? 0),
+            completion:         amayakase?.completion,
+            rank_global_ss:     amayakase?.global_ss_rank,
+            rank_country_ss:    amayakase?.country_ss_rank,
+            top50s:             amayakase?.top50s,
 
-
-            score_rank:      respektive?.rank,
-            score_rank_next: respektive?.next?.username,
-            score_next:      respektive?.next?.score,
-            score_rank_prev: respektive?.prev?.username,
-            score_prev:      respektive?.prev?.score,
+            // Respektive Stats
+            score_rank:         respektive?.rank,
+            score_rank_next:    respektive?.next?.username,
+            score_next:         respektive?.next?.score,
+            score_rank_prev:    respektive?.prev?.username,
+            score_prev:         respektive?.prev?.score,
 
             // Custom Stats
-            level:           osu?.statistics?.total_score && levelCalculator.calculateLevel(osu.statistics.total_score),
+            level:              osu?.statistics?.total_score && levelCalculator.calculateLevel(osu.statistics.total_score),
+            score_to_next_rank,
+            score_to_prev_rank,
         };
     } catch (error) {
         console.error('Error fetching stats:', error.message);

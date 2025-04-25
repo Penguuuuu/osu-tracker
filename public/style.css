@@ -200,10 +200,9 @@ hr {
 
 /* HOME --------------------------------------------------------- */
 #stats {
-    margin: 4px;
+    margin: 4px 5px 4px 5px; /* account for the border around the app */
     text-align: left;
 }
-
 #user-details {
     display: flex;
     align-items: center;
@@ -230,7 +229,7 @@ hr {
 
 #stats-grid {
     display: grid;
-    grid-template-columns: auto 160px 160px;
+    grid-template-columns: auto 154px 154px;
     gap: 4px;
 }
 
@@ -254,7 +253,7 @@ hr {
 
 #stat-settings {
     column-count: 2;
-    column-gap: 14px;
+    column-gap: 4px;
 }
 
 #stat-settings label,
