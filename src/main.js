@@ -72,7 +72,7 @@ app.whenReady().then(async () => {
     win.loadFile(path.join(__dirname, '../public/index.html'));
 
     // Devtools
-    win.webContents.openDevTools({ mode: 'detach' });
+    //win.webContents.openDevTools({ mode: 'detach' });
 
     win.on('move', () => windowManager.saveState(win));
     win.on('close', () => windowManager.saveState(win));
