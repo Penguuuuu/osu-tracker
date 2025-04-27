@@ -2,8 +2,6 @@ let fetchInterval = 5;
 let nextFetchTimestamp = null;
 let pollIntervalId = null;
 const timerAnimationFrames = ['.', '..', '...'];
-let dailyTimerInterval = null;
-let weeklyTimerInterval = null;
 
 async function shouldShowTimer() {
     const saved = JSON.parse(localStorage.getItem('statSettings') || '{}');
@@ -26,26 +24,33 @@ async function updateFetchTimerDisplay(text) {
     }
 }
 
+let isPolling = false;
+
 function stopPolling() {
     if (pollIntervalId) {
         clearInterval(pollIntervalId);
         pollIntervalId = null;
     }
+    isPolling = false;
 }
 
 function startPolling(displayStats) {
-    if (pollIntervalId) return;
+    if (isPolling) return;
+    isPolling = true;
     nextFetchTimestamp = Date.now() + fetchInterval * 1000;
     pollIntervalId = setInterval(async () => {
         const now = Date.now();
         const secondsLeft = Math.max(0, Math.ceil((nextFetchTimestamp - now) / 1000));
         if (secondsLeft > 0) {
-            await updateFetchTimerDisplay(`Next fetch in ${secondsLeft}s`);
+            requestAnimationFrame(() => updateFetchTimerDisplay(`Next fetch in ${secondsLeft}s`));
         } else {
+            requestAnimationFrame(() => updateFetchTimerDisplay('Fetching'));
             stopPolling();
-            displayStats(true).then(() => {
+            try {
+                await displayStats(true);
+            } finally {
                 startPolling(displayStats);
-            });
+            }
         }
     }, 1000);
 }
@@ -107,63 +112,65 @@ async function shouldShowDailyTimer() {
     return saved.showDailyTimer !== false;
 }
 
-async function updateDailyTimerDisplay() {
-    const el = document.getElementById('daily-timer');
-    if (!el) return;
-    const show = await shouldShowDailyTimer();
-    el.style.display = show ? '' : 'none';
-    if (!show) {
-        el.textContent = '';
-        if (dailyTimerInterval) {
-            clearInterval(dailyTimerInterval);
-            dailyTimerInterval = null;
-        }
-        return;
-    }
-    function update() {
-        const secs = getSecondsToMidnightUTC();
-        el.textContent = `Daily reset in: ${formatCountdown(secs)}`;
-    }
-    update();
-    if (!dailyTimerInterval) {
-        dailyTimerInterval = setInterval(update, 1000);
-    }
-}
-
 async function shouldShowWeeklyTimer() {
     const saved = JSON.parse(localStorage.getItem('statSettings') || '{}');
     return saved.showWeeklyTimer !== false;
 }
 
-async function updateWeeklyTimerDisplay() {
-    const el = document.getElementById('weekly-timer');
-    if (!el) return;
-    const show = await shouldShowWeeklyTimer();
-    el.style.display = show ? '' : 'none';
-    if (!show) {
-        el.textContent = '';
-        if (weeklyTimerInterval) {
-            clearInterval(weeklyTimerInterval);
-            weeklyTimerInterval = null;
+const timerDisplays = [
+    {
+        elementId: 'daily-timer',
+        shouldShowFn: shouldShowDailyTimer,
+        getSecondsFn: getSecondsToMidnightUTC,
+        label: 'Daily reset'
+    },
+    {
+        elementId: 'weekly-timer',
+        shouldShowFn: shouldShowWeeklyTimer,
+        getSecondsFn: getSecondsToNextThursdayUTC,
+        label: 'Weekly reset'
+    }
+];
+
+let sharedTimerInterval = null;
+
+async function updateAllTimerDisplays() {
+    const updates = timerDisplays.map(async (timer) => {
+        const el = document.getElementById(timer.elementId);
+        if (!el) return;
+        const show = await timer.shouldShowFn();
+        el.style.display = show ? '' : 'none';
+        if (!show) {
+            el.textContent = '';
+            return;
         }
-        return;
-    }
-    function update() {
-        const secs = getSecondsToNextThursdayUTC();
-        el.textContent = `Weekly reset in: ${formatCountdown(secs)}`;
-    }
-    update();
-    if (!weeklyTimerInterval) {
-        weeklyTimerInterval = setInterval(update, 1000);
+        let secs = timer.getSecondsFn();
+        if (isNaN(secs) || secs < 0) secs = 0;
+        el.textContent = `${timer.label} in: ${formatCountdown(secs)}`;
+    });
+    await Promise.all(updates);
+}
+
+function startSharedTimerInterval() {
+    if (sharedTimerInterval) return;
+    updateAllTimerDisplays();
+    sharedTimerInterval = setInterval(() => {
+        requestAnimationFrame(updateAllTimerDisplays);
+    }, 1000);
+}
+
+function stopSharedTimerInterval() {
+    if (sharedTimerInterval) {
+        clearInterval(sharedTimerInterval);
+        sharedTimerInterval = null;
     }
 }
 
-window.updateDailyTimerDisplay = updateDailyTimerDisplay;
-window.updateWeeklyTimerDisplay = updateWeeklyTimerDisplay;
+window.updateDailyTimerDisplay = updateAllTimerDisplays;
+window.updateWeeklyTimerDisplay = updateAllTimerDisplays;
 
 window.addEventListener('DOMContentLoaded', () => {
-    updateDailyTimerDisplay();
-    updateWeeklyTimerDisplay();
+    startSharedTimerInterval();
 });
 
 window.timer = {

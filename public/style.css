@@ -6,23 +6,20 @@
 }
 
 :root {
-    --primary:        #ff66a3;
-    --secondary:      #1C2526FF;
     --text:           #ffffff;
-    --text-secondary: #808080FF;
     --button:         #4296FA66;
     --button-hover:   #4296FAFF;
     --button-active:  #0F87FAFF;
     --main-bg:        #000000;
-    /*--main-bg:        #738C99; */
-    --main-border:    #2f2f37;
-    --main-bar:       #294A7AFF;
+    --window-border:    #2f2f37;
+    --window-bar:       #294A7AFF;
     --menu-bg :       #242424FF;
     --frame-bg:       #294A7A8A;
     --frame-bg-hover: #4296FA66;
     --window-bg:      #0F0F0FF0;
     --positive:       #4caf50;
     --negative:       #f44336;
+    --disabled:       #1C1C1C;
 }
 
 * {
@@ -94,6 +91,12 @@ hr {
     border-top: 1px solid var(--main-border);
 }
 
+b {
+    font-weight: normal;
+    text-shadow: -1px 0px 0px var(--text);
+    letter-spacing: 1px;
+}
+
 /* WINDOW ------------------------------------------------------- */
 #window-title {
     flex: 1;
@@ -101,7 +104,7 @@ hr {
 
 #window-bar {
     padding: 2px;
-    background: var(--main-bar);
+    background: var(--window-bar);
     display: flex;
     align-items: center;
     -webkit-app-region: drag;
@@ -229,7 +232,7 @@ hr {
 
 #stats-grid {
     display: grid;
-    grid-template-columns: auto 154px 154px;
+    grid-template-columns: auto 1fr 1fr;
     gap: 4px;
 }
 
@@ -266,6 +269,10 @@ hr {
     margin-bottom: 0;
 }
 
+#settings-top-row {
+    display: flex;
+    gap: 24px;
+}
 /* LOGIN -------------------------------------------------------- */
 #login-modal {
     margin: 4px;
@@ -350,7 +357,7 @@ hr {
     display: none;
     position: absolute;
     width: 100%;
-    border: 1px solid var(--main-border);
+    border: 1px solid var(--window-border);
     z-index: 10;
     top: 100%;
     left: 0;
@@ -382,20 +389,20 @@ hr {
 }
 
 .stat-disabled {
-    color: var(--text-secondary);
-    opacity: 0.6;
+    color: var(--disabled);
     cursor: not-allowed;
 }
 
 .stat-disabled input[type="checkbox"] {
     cursor: not-allowed;
-    filter: grayscale(1) brightness(1.2);
+    background-color: var(--disabled);
 }
 
 #app-border {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    border: 1px solid var(--main-border);
+    border: 1px solid var(--window-border);
     pointer-events: none;
     z-index: 9999;
 }
+

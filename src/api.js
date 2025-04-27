@@ -4,6 +4,7 @@ const levelCalculator = require('./levelcalc');
 const OSU_API_URL = 'https://osu.ppy.sh/api/v2/users/';
 const AMAYAKASE_API_URL = 'https://api.kirino.sh/inspector/users/stats/';
 const RESPEKTIVE_API_URL = 'https://score.respektive.pw/u/';
+const RESPEKTIVE_AMOUNT_URL = 'https://osu.respektive.pw/amount';
 
 const getAccessToken = async (clientId, clientSecret) => {
     try {
@@ -27,23 +28,17 @@ const getStats = async (uid, mode, clientId, clientSecret) => {
         const accessToken = await getAccessToken(clientId, clientSecret);
         if (!accessToken) return null;
 
-        const [{ data: osu }, { data: { stats: amayakase } }, { data: [respektive] }] = await Promise.all([
+        const [
+            { data: osu },
+            { data: { stats: amayakase } },
+            { data: [respektive] },
+            { data: respektiveAmount }
+        ] = await Promise.all([
             axios.get(`${OSU_API_URL}${uid}/${mode}`, { headers: { Authorization: `Bearer ${accessToken}` } }),
             axios.get(`${AMAYAKASE_API_URL}${uid}`),
-            axios.get(`${RESPEKTIVE_API_URL}${uid}?mode=${mode}`)
+            axios.get(`${RESPEKTIVE_API_URL}${uid}?mode=${mode}`),
+            axios.get(RESPEKTIVE_AMOUNT_URL)
         ]);
-
-        let score_to_next_rank = null;
-        if (respektive?.rank === 1) {
-            score_to_next_rank = null;
-        } else if (respektive?.next?.score && osu?.statistics?.ranked_score) {
-            score_to_next_rank = respektive.next.score - osu.statistics.ranked_score;
-        }
-
-        let score_to_prev_rank = null;
-        if (respektive?.prev?.score && osu?.statistics?.ranked_score) {
-            score_to_prev_rank = osu.statistics.ranked_score - respektive.prev.score;
-        }
 
         return {
             // osu! Stats
@@ -105,11 +100,14 @@ const getStats = async (uid, mode, clientId, clientSecret) => {
             score_next:         respektive?.next?.score,
             score_rank_prev:    respektive?.prev?.username,
             score_prev:         respektive?.prev?.score,
+            ranked_loved_count: respektiveAmount?.[0]?.['loved+ranked'],
 
             // Custom Stats
             level:              osu?.statistics?.total_score && levelCalculator.calculateLevel(osu.statistics.total_score),
-            score_to_next_rank,
-            score_to_prev_rank,
+            score_to_next_rank: respektive.rank == 1 ? "Nobody Ahead" : Math.max(0, respektive.next.score - osu.statistics.ranked_score),
+            score_to_prev_rank: respektive.rank == 0 ? "Nobody Behind" : osu.statistics.ranked_score - respektive.prev.score,
+            avg_ranked_score:   osu?.statistics?.ranked_score / osu?.statistics?.play_count,
+            avg_total_score:    osu?.statistics?.total_score / osu?.statistics?.play_count,
         };
     } catch (error) {
         console.error('Error fetching stats:', error.message);

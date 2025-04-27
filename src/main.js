@@ -11,6 +11,17 @@ const userConfigPath = path.join(userDataDir, 'user.json');
 const windowConfigPath = path.join(userDataDir, 'window.json');
 const statSettingsPath = path.join(userDataDir, 'statSettings.json');
 
+const createConfigManager = (filePath) => ({
+    read: () => readJsonConfig(filePath),
+    save: (data) => saveJsonConfig(filePath, data)
+});
+
+const configs = {
+    user: createConfigManager(userConfigPath),
+    window: createConfigManager(windowConfigPath),
+    stats: createConfigManager(statSettingsPath)
+};
+
 let win;
 
 async function readJsonConfig(filePath) {
@@ -25,50 +36,22 @@ async function readJsonConfig(filePath) {
 async function saveJsonConfig(filePath, config) {
     try {
         await fs.writeFile(filePath, JSON.stringify(config, null, 4), 'utf8');
-    } catch (err) {
-        console.error(`Failed to save config at ${filePath}:`, err);
+    } catch {}
+}
+
+const windowManager = {
+    getState: () => configs.window.read().then(config => ({
+        x: config.winX,
+        y: config.winY
+    })),
+    saveState: (win) => {
+        const [x, y] = win.getPosition();
+        return configs.window.save({ winX: x, winY: y });
     }
-}
-
-async function readUserConfig() {
-    return readJsonConfig(userConfigPath);
-}
-
-async function saveUserConfig(config) {
-    return saveJsonConfig(userConfigPath, config);
-}
-
-async function readWindowConfig() {
-    return readJsonConfig(windowConfigPath);
-}
-
-async function saveWindowConfig(state) {
-    return saveJsonConfig(windowConfigPath, state);
-}
-
-async function readStatSettings() {
-    return readJsonConfig(statSettingsPath);
-}
-
-async function saveStatSettings(settings) {
-    return saveJsonConfig(statSettingsPath, settings);
-}
-
-async function getWindowState() {
-    const config = await readWindowConfig();
-    return {
-        x: typeof config.winX === 'number' ? config.winX : undefined,
-        y: typeof config.winY === 'number' ? config.winY : undefined
-    };
-}
-
-async function saveWindowState(win) {
-    const [x, y] = win.getPosition();
-    await saveWindowConfig({ winX: x, winY: y });
-}
+};
 
 app.whenReady().then(async () => {
-    const windowState = await getWindowState();
+    const windowState = await windowManager.getState();
 
     win = new BrowserWindow({
         width: 460,
@@ -88,39 +71,40 @@ app.whenReady().then(async () => {
     win.setMenu(null);
     win.loadFile(path.join(__dirname, '../public/index.html'));
 
-    // Enable DevTools for debugging
-    //win.webContents.openDevTools({ mode: 'detach' });
+    // Devtools
+    win.webContents.openDevTools({ mode: 'detach' });
 
-    win.on('move', () => saveWindowState(win));
-    win.on('close', () => saveWindowState(win));
+    win.on('move', () => windowManager.saveState(win));
+    win.on('close', () => windowManager.saveState(win));
 });
 
-ipcMain.handle('fetch-stats', async () => {
-    const user = await readUserConfig();
-    if (!user.uid) {
-        return null;
-    }
-    return getStats(user.uid, user.mode, user.client_id, user.client_secret);
+const ipcHandlers = {
+    async 'fetch-stats'() {
+        const user = await configs.user.read();
+        if (!user.uid) return null;
+        return getStats(user.uid, user.mode, user.client_id, user.client_secret);
+    },
+    'get-user-config': () => configs.user.read(),
+    async 'credentials-set'() {
+        const user = await configs.user.read();
+        return !!(user.uid && user.client_id && user.client_secret);
+    },
+    'get-stat-settings': () => configs.stats.read()
+};
+
+Object.entries(ipcHandlers).forEach(([channel, handler]) => {
+    ipcMain.handle(channel, (_, ...args) => handler(...args));
 });
-
-ipcMain.handle('get-user-config', readUserConfig);
-
-ipcMain.handle('credentials-set', async () => {
-    const user = await readUserConfig();
-    return !!(user.uid && user.client_id && user.client_secret);
-});
-
-ipcMain.handle('get-stat-settings', readStatSettings);
 
 ipcMain.on('window-minimize', () => win?.minimize());
 ipcMain.on('window-close', () => win?.close());
 
-ipcMain.on('save-credentials', async (event, creds) => {
-    const existingConfig = await readUserConfig();
-    const newConfig = { ...existingConfig, ...creds };
-    await saveUserConfig(newConfig);
+ipcMain.on('save-credentials', async (_, creds) => {
+    const user = await configs.user.read();
+    const newConfig = { ...user, ...creds };
+    await configs.user.save(newConfig);
 });
 
-ipcMain.on('save-stat-settings', async (event, settings) => {
-    await saveStatSettings(settings);
+ipcMain.on('save-stat-settings', async (_, settings) => {
+    await configs.stats.save(settings);
 });

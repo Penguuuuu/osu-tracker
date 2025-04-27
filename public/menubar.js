@@ -1,39 +1,34 @@
+function makeHandler(updateFn) {
+    return () => {
+        if (typeof window.saveStatSettings === 'function') window.saveStatSettings();
+        if (typeof updateFn === 'function') updateFn();
+    };
+}
+
 const DISPLAY_OPTIONS = [
     {
         id: 'color-diffs-toggle',
         label: 'Colored stat differences',
         default: true,
-        handler: () => {
-            if (typeof window.saveStatSettings === 'function') window.saveStatSettings();
-            if (window.rerenderStatDiffs) window.rerenderStatDiffs();
-        }
+        handler: makeHandler(() => window.rerenderStatDiffs?.())
     },
     {
         id: 'show-timer-toggle',
         label: 'Show fetch timer',
         default: true,
-        handler: () => {
-            if (typeof window.saveStatSettings === 'function') window.saveStatSettings();
-            if (window.timer?.updateFetchTimerDisplay) window.timer.updateFetchTimerDisplay();
-        }
+        handler: makeHandler(() => window.timer?.updateFetchTimerDisplay?.())
     },
     {
         id: 'show-daily-timer-toggle',
         label: 'Show daily timer',
         default: false,
-        handler: () => {
-            if (typeof window.saveStatSettings === 'function') window.saveStatSettings();
-            if (window.updateDailyTimerDisplay) window.updateDailyTimerDisplay();
-        }
+        handler: makeHandler(() => window.updateDailyTimerDisplay?.())
     },
     {
         id: 'show-weekly-timer-toggle',
         label: 'Show weekly timer',
         default: false,
-        handler: () => {
-            if (typeof window.saveStatSettings === 'function') window.saveStatSettings();
-            if (window.updateWeeklyTimerDisplay) window.updateWeeklyTimerDisplay();
-        }
+        handler: makeHandler(() => window.updateWeeklyTimerDisplay?.())
     }
 ];
 
@@ -48,91 +43,120 @@ function getById(id) {
 }
 
 function setModalDisplay(modalId, show) {
+    let anyModalVisible = false;
     MODAL_IDS.forEach(id => {
         const modal = getById(id);
-        if (modal) modal.style.display = (id === modalId && show) ? 'block' : 'none';
+        if (!modal) return;
+        const shouldShow = (id === modalId && show);
+        if (shouldShow) anyModalVisible = true;
+        if (modal.style.display !== (shouldShow ? 'block' : 'none')) {
+            modal.style.display = shouldShow ? 'block' : 'none';
+        }
     });
     const statsDiv = getById('stats');
-    const anyModalVisible = MODAL_IDS.some(id => getById(id)?.style.display === 'block');
-    if (statsDiv) statsDiv.style.display = anyModalVisible ? 'none' : '';
+    if (statsDiv) {
+        const shouldHideStats = anyModalVisible;
+        if (statsDiv.style.display !== (shouldHideStats ? 'none' : '')) {
+            statsDiv.style.display = shouldHideStats ? 'none' : '';
+        }
+    }
 }
 
 function applyGamemodeSettings(gamemode) {
-    if (typeof window.setCurrentGamemode === 'function') {
-        window.setCurrentGamemode(gamemode);
+    window.setCurrentGamemode?.(gamemode);
+    window.updateStatCheckboxesForGamemode?.(gamemode);
+    window.applyStatVisibility?.();
+    window.saveStatSettings?.();
+    window.rerenderStatDiffs?.();
+}
+
+function getStatSettingsFromStorage() {
+    try {
+        return JSON.parse(localStorage.getItem('statSettings') || '{}');
+    } catch {
+        return {};
     }
-    if (typeof window.updateStatCheckboxesForGamemode === 'function') {
-        window.updateStatCheckboxesForGamemode(gamemode);
-    }
-    if (typeof window.applyStatVisibility === 'function') {
-        window.applyStatVisibility();
-    }
-    if (typeof window.saveStatSettings === 'function') {
-        window.saveStatSettings();
-    }
-    if (window.rerenderStatDiffs) window.rerenderStatDiffs();
+}
+function setStatSettingsToStorage(settings) {
+    localStorage.setItem('statSettings', JSON.stringify(settings));
+}
+
+function getDisplayOptionKey(id) {
+    return id
+        .replace('-toggle', '')
+        .split('-')
+        .map((s, i) => i === 0 ? s : s[0].toUpperCase() + s.slice(1))
+        .join('');
 }
 
 function updateStatCheckboxesForGamemode(gamemode) {
-    const saved = JSON.parse(localStorage.getItem('statSettings') || '{}');
+    const saved = getStatSettingsFromStorage();
     let changed = false;
-    document.querySelectorAll('#stat-settings input[type="checkbox"][value]').forEach(cb => {
+    const checkboxes = document.querySelectorAll('#stat-settings input[type="checkbox"][value]');
+    checkboxes.forEach(cb => {
         const label = cb.parentElement;
         const meta = window.STAT_META?.[cb.value];
-        if (meta?.exclude && meta.exclude.includes(gamemode)) {
-            label.classList.add('stat-disabled');
-            cb.disabled = true;
+        const shouldDisable = meta?.exclude && meta.exclude.includes(gamemode);
+
+        if (shouldDisable) {
+            if (!label.classList.contains('stat-disabled')) label.classList.add('stat-disabled');
+            if (!cb.disabled) cb.disabled = true;
             if (cb.checked) {
                 cb.checked = false;
                 saved[cb.value] = false;
                 changed = true;
             }
         } else {
-            label.classList.remove('stat-disabled');
-            cb.disabled = false;
+            if (label.classList.contains('stat-disabled')) label.classList.remove('stat-disabled');
+            if (cb.disabled) cb.disabled = false;
         }
     });
     if (changed) {
-        localStorage.setItem('statSettings', JSON.stringify(saved));
+        setStatSettingsToStorage(saved);
     }
 }
 window.updateStatCheckboxesForGamemode = updateStatCheckboxesForGamemode;
 
 async function loadStatSettings() {
     let saved = {};
-    if (window.osuAPI?.getStatSettings) {
-        saved = await window.osuAPI.getStatSettings() || {};
-    } else {
-        saved = JSON.parse(localStorage.getItem('statSettings') || '{}');
-    }
+    try {
+        if (window.osuAPI?.getStatSettings) {
+            saved = await window.osuAPI.getStatSettings() || {};
+        } else {
+            saved = getStatSettingsFromStorage();
+        }
+    } catch (e) {}
 
     document.querySelectorAll('#stat-settings input[type="checkbox"][value]').forEach(cb => {
         cb.checked = saved[cb.value] === true;
     });
-    document.getElementById('color-diffs-toggle').checked = saved.colorDiffs !== false;
-    document.getElementById('show-timer-toggle').checked = saved.showTimer !== false;
-    document.getElementById('show-daily-timer-toggle').checked = saved.showDailyTimer !== false;
-    document.getElementById('show-weekly-timer-toggle').checked = saved.showWeeklyTimer !== false;
+
+    DISPLAY_OPTIONS.forEach(opt => {
+        const el = document.getElementById(opt.id);
+        if (!el) return;
+        const key = getDisplayOptionKey(opt.id);
+        el.checked = saved[key] !== false;
+    });
 
     let gamemode = 'osu';
-    if (window.osuAPI?.getUserConfig) {
-        const config = await window.osuAPI.getUserConfig();
-        gamemode = config.mode || 'osu';
+    try {
+        if (window.osuAPI?.getUserConfig) {
+            const config = await window.osuAPI.getUserConfig();
+            gamemode = config.mode || 'osu';
+        }
+    } catch (e) {}
 
-        const dropdown = document.getElementById('settings-gamemode-dropdown');
-        if (dropdown) {
-            const selected = dropdown.querySelector('.selected');
-            const optionDivs = dropdown.querySelectorAll('.option');
-            const match = Array.from(optionDivs).find(opt => opt.dataset.value === gamemode);
-            if (match && selected) {
-                selected.textContent = match.textContent;
-                dropdown.dataset.value = gamemode;
-            }
-            if (typeof window.updateStatCheckboxesForGamemode === 'function') {
-                window.updateStatCheckboxesForGamemode(gamemode);
-            }
+    const dropdown = document.getElementById('settings-gamemode-dropdown');
+    if (dropdown) {
+        const selected = dropdown.querySelector('.selected');
+        const optionDivs = dropdown.querySelectorAll('.option');
+        const match = Array.from(optionDivs).find(opt => opt.dataset.value === gamemode);
+        if (match && selected && selected.textContent !== match.textContent) {
+            selected.textContent = match.textContent;
+            dropdown.dataset.value = gamemode;
         }
     }
+    window.updateStatCheckboxesForGamemode?.(gamemode);
 }
 
 function saveStatSettings() {
@@ -140,15 +164,17 @@ function saveStatSettings() {
     document.querySelectorAll('#stat-settings input[type="checkbox"][value]').forEach(cb => {
         settings[cb.value] = cb.checked;
     });
-    settings.colorDiffs = document.getElementById('color-diffs-toggle').checked;
-    settings.showTimer = document.getElementById('show-timer-toggle').checked;
-    settings.showDailyTimer = document.getElementById('show-daily-timer-toggle').checked;
-    settings.showWeeklyTimer = document.getElementById('show-weekly-timer-toggle').checked;
 
-    if (window.osuAPI?.saveStatSettings) {
-        window.osuAPI.saveStatSettings(settings);
-    }
-    localStorage.setItem('statSettings', JSON.stringify(settings));
+    DISPLAY_OPTIONS.forEach(opt => {
+        const el = document.getElementById(opt.id);
+        if (el) {
+            const key = getDisplayOptionKey(opt.id);
+            settings[key] = el.checked;
+        }
+    });
+
+    window.osuAPI?.saveStatSettings?.(settings);
+    setStatSettingsToStorage(settings);
 }
 
 window.saveStatSettings = saveStatSettings;
@@ -162,37 +188,33 @@ function setActiveMenu(btnId) {
 
 function onDisplayOptionChange(e) {
     const opt = DISPLAY_OPTIONS.find(o => o.id === e.target.id);
-    if (opt && typeof opt.handler === 'function') {
-        opt.handler();
-    }
+    opt?.handler?.();
 }
 
 function setupDisplayOptions() {
     const customizationSettings = document.getElementById('customization-settings');
-    if (customizationSettings) {
-        const p = customizationSettings.querySelector('p');
-        if (p) {
-            p.querySelectorAll('label').forEach(label => label.remove());
-            DISPLAY_OPTIONS.forEach(opt => {
-                const label = document.createElement('label');
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = opt.id;
-                checkbox.checked = opt.default;
-                checkbox.addEventListener('change', onDisplayOptionChange);
-                label.appendChild(checkbox);
-                label.appendChild(document.createTextNode(' ' + opt.label));
-                p.appendChild(label);
-            });
-        }
-    }
-}
+    if (!customizationSettings) return;
+    const p = customizationSettings.querySelector('p');
+    if (!p) return;
+    p.innerHTML = '';
 
-function handleCheckboxChange() {
-    if (typeof window.saveStatSettings === 'function') window.saveStatSettings();
-    if (typeof window.applyStatVisibility === 'function') window.applyStatVisibility();
-    if (window.rerenderStatDiffs) window.rerenderStatDiffs();
-    if (window.timer?.updateFetchTimerDisplay) window.timer.updateFetchTimerDisplay();
+    const saved = getStatSettingsFromStorage();
+    const fragment = document.createDocumentFragment();
+
+    DISPLAY_OPTIONS.forEach(opt => {
+        const label = document.createElement('label');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = opt.id;
+        const key = getDisplayOptionKey(opt.id);
+        checkbox.checked = saved[key] !== undefined ? saved[key] !== false : opt.default;
+        checkbox.addEventListener('change', onDisplayOptionChange);
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(' ' + opt.label));
+        fragment.appendChild(label);
+    });
+
+    p.appendChild(fragment);
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -240,42 +262,17 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     getById('settings-save-btn')?.addEventListener('click', () => {
-        const dropdown = document.getElementById('settings-gamemode-dropdown');
+        const dropdown = getById('settings-gamemode-dropdown');
         const gamemode = dropdown?.dataset.value || 'osu';
-        window.setCurrentGamemode(gamemode);
-        if (typeof window.updateStatCheckboxesForGamemode === 'function') {
-            window.updateStatCheckboxesForGamemode(gamemode);
-        }
-        if (typeof window.applyStatVisibility === 'function') {
-            window.applyStatVisibility();
-        }
-        saveStatSettings();
-        if (window.rerenderStatDiffs) window.rerenderStatDiffs();
+        applyGamemodeSettings(gamemode);
     });
 
-    document.getElementById('settings-gamemode')?.addEventListener('change', (e) => {
-        updateStatCheckboxesForGamemode(e.target.value);
-    });
-
-    const gamemodeDropdown = document.getElementById('settings-gamemode-dropdown');
+    const gamemodeDropdown = getById('settings-gamemode-dropdown');
     gamemodeDropdown?.addEventListener('gamemodechange', (e) => {
         const gamemode = e.detail;
-        if (typeof window.setCurrentGamemode === 'function') {
-            window.setCurrentGamemode(gamemode);
-        }
-        if (typeof window.updateStatCheckboxesForGamemode === 'function') {
-            window.updateStatCheckboxesForGamemode(gamemode);
-        }
-        if (typeof window.applyStatVisibility === 'function') {
-            window.applyStatVisibility();
-        }
-        if (typeof window.saveStatSettings === 'function') {
-            window.saveStatSettings();
-        }
-        if (window.rerenderStatDiffs) window.rerenderStatDiffs();
+        applyGamemodeSettings(gamemode);
     });
 
     setupDisplayOptions();
-
     setActiveMenu('home-btn');
 });

@@ -19,24 +19,22 @@
     </div>
     <div id="main-content">
         <div id="settings-modal" style="display:none;">
-            <div id="settings-top-row" style="display: flex; gap: 24px; align-items: flex-start;">
+            <div id="settings-top-row">
                 <div>
-                    <p>
-                        Gamemode<br>
-                        <div id="settings-gamemode-dropdown" class="custom-dropdown" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
-                            <div class="selected" aria-labelledby="settings-gamemode-dropdown">osu!</div>
-                            <div class="dropdown-options" role="listbox">
-                                <div class="option" data-value="osu"    role="option" tabindex="0">osu!</div>
-                                <div class="option" data-value="taiko"  role="option" tabindex="0">Taiko</div>
-                                <div class="option" data-value="fruits" role="option" tabindex="0">Catch</div>
-                                <div class="option" data-value="mania"  role="option" tabindex="0">Mania</div>
-                            </div>
+                    <p>Gamemode</p>
+                    <div id="settings-gamemode-dropdown" class="custom-dropdown" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
+                        <div class="selected" aria-labelledby="settings-gamemode-dropdown">osu!</div>
+                        <div class="dropdown-options" role="listbox">
+                            <div class="option" data-value="osu"    role="option" tabindex="0">osu!</div>
+                            <div class="option" data-value="taiko"  role="option" tabindex="0">Taiko</div>
+                            <div class="option" data-value="fruits" role="option" tabindex="0">Catch</div>
+                            <div class="option" data-value="mania"  role="option" tabindex="0">Mania</div>
                         </div>
-                    </p>
+                    </div>
                 </div>
                 <div id="customization-settings">
-                    <p>Display Options<br>
-                    </p>
+                    <span>Display Options</span>
+                    <p></p>
                 </div>
             </div>
             <hr>
@@ -83,6 +81,7 @@
     <script src="timer.js"></script>
     <script src="stats.js"></script>
     <script src="windowcontrols.js"></script>
+    <script src="roundtext.js"></script>
     <div id="app-border"></div>
 </body>
 </html>
