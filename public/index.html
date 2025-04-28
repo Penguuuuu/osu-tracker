@@ -4,76 +4,78 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="window-bar">
-        <span id="window-title">osu! Tracker (1.0.3)</span>
-        <button id="min-btn"   class="window-btn"></button>
-        <button id="close-btn" class="window-btn"></button>
-    </div>
-    <div id="menu-bar">
-        <div id="menu-buttons">
-            <button id="home-btn"     class="menu-btn">Home</button>
-            <button id="settings-btn" class="menu-btn">Settings</button>
-            <button id="login-btn"    class="menu-btn">Login</button>
-            <button id="help-btn"     class="menu-btn">Help</button>
+    <div id="container">
+        <div id="window-bar">
+            <span id="window-title">osu! Tracker (1.0.3)</span>
+            <button id="min-btn"   class="window-btn"></button>
+            <button id="close-btn" class="window-btn"></button>
         </div>
-    </div>
-    <div id="main-content">
-        <div id="settings-modal" style="display:none;">
-            <div id="settings-top-row">
-                <div>
-                    <p>Gamemode</p>
-                    <div id="settings-gamemode-dropdown" class="custom-dropdown" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
-                        <div class="selected" aria-labelledby="settings-gamemode-dropdown">osu!</div>
-                        <div class="dropdown-options" role="listbox">
-                            <div class="option" data-value="osu"    role="option" tabindex="0">osu!</div>
-                            <div class="option" data-value="taiko"  role="option" tabindex="0">Taiko</div>
-                            <div class="option" data-value="fruits" role="option" tabindex="0">Catch</div>
-                            <div class="option" data-value="mania"  role="option" tabindex="0">Mania</div>
+        <div id="menu-bar">
+            <div id="menu-buttons">
+                <button id="home-btn"     class="menu-btn">Home</button>
+                <button id="settings-btn" class="menu-btn">Settings</button>
+                <button id="login-btn"    class="menu-btn">Login</button>
+                <button id="help-btn"     class="menu-btn">Help</button>
+            </div>
+        </div>
+        <div id="main-content">
+            <div id="settings-modal" style="display:none;">
+                <div id="settings-top-row">
+                    <div>
+                        <p>Gamemode</p>
+                        <div id="settings-gamemode-dropdown" class="custom-dropdown" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
+                            <div class="selected" aria-labelledby="settings-gamemode-dropdown">osu!</div>
+                            <div class="dropdown-options" role="listbox">
+                                <div class="option" data-value="osu"    role="option" tabindex="0">osu!</div>
+                                <div class="option" data-value="taiko"  role="option" tabindex="0">Taiko</div>
+                                <div class="option" data-value="fruits" role="option" tabindex="0">Catch</div>
+                                <div class="option" data-value="mania"  role="option" tabindex="0">Mania</div>
+                            </div>
                         </div>
                     </div>
+                    <div id="customization-settings">
+                        <span>Display Options</span>
+                        <p></p>
+                    </div>
                 </div>
-                <div id="customization-settings">
-                    <span>Display Options</span>
-                    <p></p>
-                </div>
+                <hr>
+                <div id="stat-settings"></div>
             </div>
-            <hr>
-            <div id="stat-settings"></div>
-        </div>
-        <div id="login-modal" style="display:none;">
-            <div id="login-grid">
-                <div class="login-label">UID:</div>
-                <div class="login-input"><input type="text"     id="login-uid"></div>
-                <div class="login-label">Client ID:</div>
-                <div class="login-input"><input type="text"     id="login-clientid"></div>
-                <div class="login-label">Client Secret:</div>
-                <div class="login-input"><input type="password" id="login-clientsecret"></div>
-            </div>
-            <button id="login-save-btn">Save</button>
-        </div>
-        <div id="help-modal"style="display:none;">
-            <p>[Getting Started]</p>
-            <p>To start, click on the 'Login' section and enter you details.</p>
-            <p>Then click on settings to set your stats. Make sure to check out the customization options!</p>
-            <br>
-            <p>For help or suggestions you can reach me here</p>
-            <p>Email: patchoulidev@gmail.com</p>
-            <p>Discord: sleepypatchouli</p>
-        </div>
-        <div id="stats">
-            <div id="user-details">
-                <img id="avatar-img" src="" style="display:none;">
-                <div id="profile-info">
-                    <span id="username"></span>
-                    <span id="gamemode-container"></span>
-                    <span id="fetch-timer"></span>
+            <div id="login-modal" style="display:none;">
+                <div id="login-grid">
+                    <div class="login-label">UID:</div>
+                    <div class="login-input"><input type="text"     id="login-uid"></div>
+                    <div class="login-label">Client ID:</div>
+                    <div class="login-input"><input type="text"     id="login-clientid"></div>
+                    <div class="login-label">Client Secret:</div>
+                    <div class="login-input"><input type="password" id="login-clientsecret"></div>
                 </div>
-                <div id="daily-weekly-timer">
-                    <span id="daily-timer"></span>
-                    <span id="weekly-timer"></span>
-                </div>
+                <button id="login-save-btn">Save</button>
             </div>
-            <div id="stats-grid"></div>
+            <div id="help-modal"style="display:none;">
+                <p>[Getting Started]</p>
+                <p>To start, click on the 'Login' section and enter you details.</p>
+                <p>Then click on settings to set your stats. Make sure to check out the customization options!</p>
+                <br>
+                <p>For help or suggestions you can reach me here</p>
+                <p>Email: patchoulidev@gmail.com</p>
+                <p>Discord: sleepypatchouli</p>
+            </div>
+            <div id="stats">
+                <div id="user-details">
+                    <img id="avatar-img" src="" style="display:none;">
+                    <div id="profile-info">
+                        <span id="username"></span>
+                        <span id="gamemode-container"></span>
+                        <span id="fetch-timer"></span>
+                    </div>
+                    <div id="daily-weekly-timer">
+                        <span id="daily-timer"></span>
+                        <span id="weekly-timer"></span>
+                    </div>
+                </div>
+                <div id="stats-grid"></div>
+            </div>
         </div>
     </div>
     <script src="menubar.js"></script>

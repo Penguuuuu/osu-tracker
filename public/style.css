@@ -110,6 +110,7 @@ b {
     position: sticky;
     top: 0;
     z-index: 998;
+    height: 20px;
 }
 
 #window-title {
@@ -149,18 +150,17 @@ b {
 /* SCROLLBAR ---------------------------------------------------- */
 #main-content {
     position: absolute;
-    top: 39px;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 40px 0 0 0;
+    padding: 4px;
     overflow-y: auto;
     background: var(--main-bg);
-    margin: 4px;
+    
 }
 
 #main-content::-webkit-scrollbar {
     width: 8px;
     background: var(--menu-bg);
+    
 }
 
 #main-content::-webkit-scrollbar-thumb {
