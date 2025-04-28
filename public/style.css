@@ -11,8 +11,8 @@
     --button-hover:   #4296FAFF;
     --button-active:  #0F87FAFF;
     --main-bg:        #000000;
-    --window-border:    #2f2f37;
-    --window-bar:       #294A7AFF;
+    --window-border:  #2f2f37;
+    --window-bar:     #294A7AFF;
     --menu-bg :       #242424FF;
     --frame-bg:       #294A7A8A;
     --frame-bg-hover: #4296FA66;
@@ -31,9 +31,11 @@
 }
 
 body {
+    position: fixed;
+    inset: 0;
+    border: 1px solid var(--window-border);
     background-color: var(--main-bg);
     color: var(--text);
-    
 }
 
 input {
@@ -88,7 +90,7 @@ button:active {
 hr {
     margin: 12px 0;
     border: none;
-    border-top: 1px solid var(--main-border);
+    border-top: 1px solid var(--window-border);
 }
 
 b {
@@ -98,10 +100,6 @@ b {
 }
 
 /* WINDOW ------------------------------------------------------- */
-#window-title {
-    flex: 1;
-}
-
 #window-bar {
     padding: 2px;
     background: var(--window-bar);
@@ -111,7 +109,11 @@ b {
     user-select: none;
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 998;
+}
+
+#window-title {
+    flex: 1;
 }
 
 #close-btn,
@@ -153,6 +155,7 @@ b {
     bottom: 0;
     overflow-y: auto;
     background: var(--main-bg);
+    margin: 4px;
 }
 
 #main-content::-webkit-scrollbar {
@@ -203,9 +206,9 @@ b {
 
 /* HOME --------------------------------------------------------- */
 #stats {
-    margin: 4px 5px 4px 5px; /* account for the border around the app */
     text-align: left;
 }
+
 #user-details {
     display: flex;
     align-items: center;
@@ -250,7 +253,6 @@ b {
 
 /* SETTINGS ----------------------------------------------------- */
 #settings-modal {
-    margin: 4px;
     text-align: left;
 }
 
@@ -275,7 +277,6 @@ b {
 }
 /* LOGIN -------------------------------------------------------- */
 #login-modal {
-    margin: 4px;
     text-align: left;
 }
 
@@ -300,7 +301,6 @@ b {
 
 /* HELP --------------------------------------------------------- */
 #help-modal {
-    margin: 4px;
     text-align: left;
 }
 
@@ -397,12 +397,3 @@ b {
     cursor: not-allowed;
     background-color: var(--disabled);
 }
-
-#app-border {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    border: 1px solid var(--window-border);
-    pointer-events: none;
-    z-index: 9999;
-}
-

@@ -60,7 +60,6 @@ app.whenReady().then(async () => {
         y: windowState.y,
         frame: false,
         resizable: false,
-        transparent: true,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
