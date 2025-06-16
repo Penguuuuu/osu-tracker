@@ -51,7 +51,7 @@ function displayUserData(json, initialData) {
     statDefinitions.forEach(({ id, label, value, initial, precision = 0, prefix = '', suffix = '', invertDelta = false }) => {
 
         const divStats = createElement('div', { id, textContent: `${label}: ${prefix}${value.toFixed(precision)}${suffix}` });
-        const divStatsDelta = createElement('div', { id: `delta-${id}`, textContent: (value - initial !== 0) ? `${invertDelta ? (value - initial > 0 ? '-' : '+') : (value - initial > 0 ? '+' : '-')}${Math.abs(value - initial).toFixed(precision)}${suffix}` : '' });
+        const divStatsDelta = createElement('div', { id: `delta-${id}`, textContent: (value - initial !== 0) ? `${invertDelta ? (value - initial > 0 ? '-' : '+') : (value - initial > 0 ? '+' : '-')}${Math.abs(value - initial).toFixed(precision)}` : '' });
         const checkboxStats = createElement('input', { type: 'checkbox', checked: true, id: `checkbox-${id}` });
         const labelStats = createElement('label', { htmlFor: checkboxStats.id, textContent: label });
 
