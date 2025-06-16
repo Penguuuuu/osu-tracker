@@ -35,10 +35,10 @@ function displayUserData(json, initialData) {
     optionsStatsContainer.innerHTML = '';
 
     const statDefinitions = [
-        { id: 'pp', label: 'PP', value: stats.pp, initial: initialStats?.pp, precision: 2, prefix: '', suffix: '' },
-        { id: 'ppv1', label: 'PPv1', value: stats.ppv1, initial: initialStats?.ppv1, precision: 2, prefix: '', suffix: '' },
-        { id: 'rank', label: 'Rank', value: stats.rank, initial: initialStats?.rank, precision: 0, prefix: '#', suffix: '' },
-        { id: 'acc', label: 'Accuracy', value: stats.acc * 100, initial: initialStats?.acc * 100, precision: 3, prefix: '', suffix: '%' },
+        { id: 'pp', label: 'PP', value: stats.pp, initial: initialStats?.pp, precision: 2},
+        { id: 'ppv1', label: 'PPv1', value: stats.ppv1, initial: initialStats?.ppv1, precision: 2},
+        { id: 'rank', label: 'Rank', value: stats.rank, initial: initialStats?.rank, prefix: '#', invertDelta: true },
+        { id: 'acc', label: 'Accuracy', value: stats.acc * 100, initial: initialStats?.acc * 100, precision: 3, suffix: '%'},
     ];
 
     const createElement = (tag, properties = {}, children = []) => {
@@ -48,9 +48,10 @@ function displayUserData(json, initialData) {
         return element;
     };
 
-    statDefinitions.forEach(({ id, label, value, initial, precision = 0, prefix = '', suffix = '' }) => {
+    statDefinitions.forEach(({ id, label, value, initial, precision = 0, prefix = '', suffix = '', invertDelta = false }) => {
+
         const divStats = createElement('div', { id, textContent: `${label}: ${prefix}${value.toFixed(precision)}${suffix}` });
-        const divStatsDelta = createElement('div', { id: `delta-${id}`, textContent: `${(value - initial).toFixed(precision)}` });
+        const divStatsDelta = createElement('div', { id: `delta-${id}`, textContent: (value - initial !== 0) ? `${invertDelta ? (value - initial > 0 ? '-' : '+') : (value - initial > 0 ? '+' : '-')}${Math.abs(value - initial).toFixed(precision)}${suffix}` : '' });
         const checkboxStats = createElement('input', { type: 'checkbox', checked: true, id: `checkbox-${id}` });
         const labelStats = createElement('label', { htmlFor: checkboxStats.id, textContent: label });
 
