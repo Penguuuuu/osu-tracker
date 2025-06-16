@@ -18,16 +18,16 @@ async function fetchUserData() {
         const json = await response.json();
         if (initialData === null) {
             initialData = JSON.parse(JSON.stringify(json));
-            console.log('Initial:', initialData);
         }
-        displayUserData(json);
+        displayUserData(json, initialData);
     } catch (error) {
         console.error('An error occurred:', error);
     }
 }
 
-function displayUserData(json) {
+function displayUserData(json, initialData) {
     const stats = json.stats.find(s => s.mode === mode);
+    const initialStats = initialData?.stats.find(s => s.mode === mode);
     const homeStatsContainer = document.getElementById('home-stats');
     const optionsStatsContainer = document.getElementById('options-stats');
 
@@ -35,10 +35,10 @@ function displayUserData(json) {
     optionsStatsContainer.innerHTML = '';
 
     const statDefinitions = [
-        { id: 'pp',   label: 'PP',       value: stats.pp },
-        { id: 'ppv1', label: 'PPv1',     value: stats.ppv1 },
-        { id: 'rank', label: 'Rank',     value: stats.rank },
-        { id: 'acc',  label: 'Accuracy', value: stats.acc === 0 ? '0' : (stats.acc * 100).toFixed(3) + '%' },
+        { id: 'pp', label: 'PP', value: stats.pp, initial: initialStats?.pp, precision: 2, prefix: '', suffix: '' },
+        { id: 'ppv1', label: 'PPv1', value: stats.ppv1, initial: initialStats?.ppv1, precision: 2, prefix: '', suffix: '' },
+        { id: 'rank', label: 'Rank', value: stats.rank, initial: initialStats?.rank, precision: 0, prefix: '#', suffix: '' },
+        { id: 'acc', label: 'Accuracy', value: stats.acc * 100, initial: initialStats?.acc * 100, precision: 3, prefix: '', suffix: '%' },
     ];
 
     const createElement = (tag, properties = {}, children = []) => {
@@ -48,20 +48,23 @@ function displayUserData(json) {
         return element;
     };
 
-    statDefinitions.forEach(({ id, label, value }) => {
-        const divStats = createElement('div', { id, textContent: `${label}: ${value}` });
+    statDefinitions.forEach(({ id, label, value, initial, precision = 0, prefix = '', suffix = '' }) => {
+        const divStats = createElement('div', { id, textContent: `${label}: ${prefix}${value.toFixed(precision)}${suffix}` });
+        const divStatsDelta = createElement('div', { id: `delta-${id}`, textContent: `${(value - initial).toFixed(precision)}` });
         const checkboxStats = createElement('input', { type: 'checkbox', checked: true, id: `checkbox-${id}` });
         const labelStats = createElement('label', { htmlFor: checkboxStats.id, textContent: label });
 
         checkboxStats.addEventListener('change', () => {
             divStats.style.display = checkboxStats.checked ? 'block' : 'none';
+            divStatsDelta.style.display = checkboxStats.checked ? 'block' : 'none';
         });
 
         homeStatsContainer.appendChild(divStats);
+        homeStatsContainer.appendChild(divStatsDelta);
         optionsStatsContainer.appendChild(labelStats);
         optionsStatsContainer.appendChild(checkboxStats);
     });
 }
 
-fetchUserData(); //initial fetch before refresh timer
+fetchUserData(); // initial fetch before refresh timer
 setInterval(fetchUserData, refetchInterval);
