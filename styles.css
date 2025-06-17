@@ -28,7 +28,7 @@ body {
 #home-stats {
     display: grid;
     grid-auto-flow: row;
-    grid-template-columns: max-content max-content max-content;
+    grid-template-columns: max-content 1fr 1fr;
     gap: 2px 8px;
 
 }

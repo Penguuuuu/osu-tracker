@@ -36,6 +36,7 @@ function displayUserData(json, initialData) {
         { id: 'ppv1', label: 'PPv1', value: stats.ppv1, initial: initialStats?.ppv1, precision: 2 },
         { id: 'rank', label: 'Rank', value: stats.rank, initial: initialStats?.rank, prefix: '#', invertDelta: true },
         { id: 'acc', label: 'Accuracy', value: stats.acc * 100, initial: initialStats?.acc * 100, precision: 3, suffix: '%' },
+        { id: 'rscore', label: 'Ranked Score', value: stats.rscore, initial: initialStats?.rscore, prefix: '' },
     ];
 
     const createElement = (tag, properties = {}, children = []) => {
@@ -45,11 +46,13 @@ function displayUserData(json, initialData) {
         return element;
     };
 
+    const formatNumber = (v, p = 0) => v.toLocaleString(undefined, { minimumFractionDigits: p, maximumFractionDigits: p });
+
     statDefinitions.forEach(({ id, label, value, initial, precision = 0, prefix = '', suffix = '', invertDelta = false }) => {
         const labelDivStats = createElement('div', { id, textContent: `${label}:` });
-        const divStats = createElement('div', { id: `stat-${id}`, textContent: `${prefix}${value.toFixed(precision)}${suffix}` });
+        const divStats = createElement('div', { id: `stat-${id}`, textContent: `${prefix}${formatNumber(value, precision)}${suffix}` });
         const delta = value - initial;
-        const divStatsDelta = createElement('div', { id: `delta-${id}`, textContent: (delta !== 0) ? `${invertDelta ? (delta > 0 ? '-' : '+') : (delta > 0 ? '+' : '-')}${Math.abs(delta).toFixed(precision)}` : '' });
+        const divStatsDelta = createElement('div', { id: `delta-${id}`, textContent: (delta !== 0) ? `${invertDelta ? (delta > 0 ? '-' : '+') : (delta > 0 ? '+' : '-')}${formatNumber(Math.abs(delta), precision)}` : '' });
         const statRow = createElement('div', { className: 'stat-row' }, [labelDivStats, divStats, divStatsDelta]);
         fragment.appendChild(statRow);
     });
