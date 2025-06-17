@@ -46,7 +46,7 @@ function displayUserData(json, initialData) {
         return element;
     };
 
-    const formatNumber = (v, p = 0) => v.toLocaleString(undefined, { minimumFractionDigits: p, maximumFractionDigits: p });
+    const formatNumber = (value, precision) => value.toLocaleString(undefined, { maximumFractionDigits: precision });
 
     statDefinitions.forEach(({ id, label, value, initial, precision = 0, prefix = '', suffix = '', invertDelta = false }) => {
         const labelDivStats = createElement('div', { id, textContent: `${label}:` });
