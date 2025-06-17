@@ -6,8 +6,29 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="options-stats"></div>
-    <div id="home-stats"></div>
-    <script src="api.js"></script> 
+<div id="window-bar">
+    <span id="window-title" class="canvas">osu! Tracker (0.0.1)</span>
+    <div id="window-controls">
+        <button id="minimise-btn" aria-label="Minimise"><img src="minimise.svg" alt="-"></button>
+        <button id="close-btn" aria-label="Close"><img src="close.svg" alt="x"></button>
+    </div>
+</div>
+<nav>
+    <button onclick="showSection('home')">Home</button>
+    <button onclick="showSection('settings')">Settings</button>
+    <button onclick="showSection('login')">Login</button>
+    <button onclick="showSection('misc')">Misc</button>
+</nav>
+<div id="main-content">
+    <section id="home">
+        <div id="home-stats"></div>
+    </section>
+    <section id="settings">
+        <div id="options-stats"></div>
+        <p>Settings content here</p>
+    </section>
+</div>
+<script src="api.js" defer></script>
+<script src="section-toggle.js" defer></script>
 </body>
 </html>

@@ -32,8 +32,8 @@ function displayUserData(json, initialData) {
     const fragment = document.createDocumentFragment();
 
     const statDefinitions = [
-        { id: 'pp', label: 'PP', value: stats.pp, initial: initialStats?.pp, precision: 2 },
-        { id: 'ppv1', label: 'PPv1', value: stats.ppv1, initial: initialStats?.ppv1, precision: 2 },
+        { id: 'pp', label: 'PP', value: stats.pp, initial: initialStats?.pp, precision: 3 },
+        { id: 'ppv1', label: 'PPv1', value: stats.ppv1, initial: initialStats?.ppv1, precision: 3 },
         { id: 'rank', label: 'Rank', value: stats.rank, initial: initialStats?.rank, prefix: '#', invertDelta: true },
         { id: 'acc', label: 'Accuracy', value: stats.acc * 100, initial: initialStats?.acc * 100, precision: 3, suffix: '%' },
         { id: 'rscore', label: 'Ranked Score', value: stats.rscore, initial: initialStats?.rscore, prefix: '' },

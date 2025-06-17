@@ -17,7 +17,26 @@
     padding: 0;
 }
 
+#window-bar {
+    background: var(--one);
+    color: var(--black);
+    display: flex;
+    align-items: center;
+    -webkit-app-region: drag;
+    user-select: none;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    height: 20px; 
+    padding: 0 6px;
+    justify-content: space-between;
+    transform: translateY(-1px); /* -1 to account for body border */
+}
+
 body {
+    position: fixed;
+    inset: 0;
+    border: 1px solid var(--one);
     font-family: monospace;
     color: var(--one);
     background-color: var(--two);
@@ -25,12 +44,15 @@ body {
     font-size: 12px;
 }
 
+#home, #settings, #login, #misc {
+    padding: 4px;
+}
+
 #home-stats {
     display: grid;
     grid-auto-flow: row;
     grid-template-columns: max-content 1fr 1fr;
-    gap: 2px 8px;
-
+    gap: 2px 4px;
 }
 
 .stat-row {
@@ -43,7 +65,20 @@ body {
     background-color: var(--seven);
 }
 
-.stat-row div:empty {
-    background: none;
+section { display: none; }
+section.active { display: block; }
+
+nav button {
+    color: var(--one);
+    background-color: var(--four);
     border: none;
+    gap: 4px;
+    padding: 0 6px;
 }
+
+nav button:hover,
+nav button.active {
+    color: var(--black);
+    background-color: var(--five);
+}
+nav button:hover:not(.active) { cursor: pointer; }
