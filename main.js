@@ -6,6 +6,7 @@ const win = new BrowserWindow({
 width: 800,
 height: 600,
 hasShadow: false,
+transparent: true,
 roundedCorners: false,
 frame: false,
 autoHideMenuBar: true,

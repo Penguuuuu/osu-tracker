@@ -1,1 +1,49 @@
-* { box-sizing: border-box; }
+:root {
+    --hue: 185;
+    --sat: 20%;
+    --one: hsl(var(--hue), var(--sat), 74%);
+    --two: hsl(var(--hue), var(--sat), 7%);
+    --three: hsl(var(--hue), var(--sat), 20%);
+    --four: hsl(var(--hue), var(--sat), 29%);
+    --five: hsl(var(--hue), var(--sat), 52%);
+    --six: hsl(var(--hue), var(--sat), 9%);
+    --seven: hsl(var(--hue), var(--sat), 9%);
+    --black: rgb(0, 0, 0);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: monospace;
+    color: var(--one);
+    background-color: var(--two);
+    height: 100vh;
+    font-size: 12px;
+}
+
+#home-stats {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template-columns: max-content max-content max-content;
+    gap: 2px 8px;
+
+}
+
+.stat-row {
+    display: contents;
+}
+
+.stat-row div:not(:first-child){
+    padding: 2px 6px;
+    border: 1px solid var(--three);
+    background-color: var(--seven);
+}
+
+.stat-row div:empty {
+    background: none;
+    border: none;
+}
