@@ -1,64 +1,87 @@
-let uid = 41;
-let mode = 0;
-let initialData = null;
-let refetchInterval = 5000;
+const axios = require('axios');
+require('dotenv').config();
 
-function toggleUID() {
-    uid = uid === 41 ? 1885 : 41;
+let token = null;
+let tokenExpiry = null;
+let uidList = ["19381776", "11196666"];
+let uidIndex = 0;
+let mode = "osu";
+
+function toggleUid() {
+    uidIndex = 1 - uidIndex;
+    return uidList[uidIndex];
 }
 
-async function fetchUserData() {
-    toggleUID();
+async function getToken() {
+    if (token && Date.now() < tokenExpiry) 
+        return token;
+
+    const CLIENT_ID = process.env.CLIENT_ID;
+    const CLIENT_SECRET = process.env.CLIENT_SECRET;
+    const body = {  
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        grant_type: "client_credentials",
+        scope: "public"
+    };
+    const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+    };
 
     try {
-        const response = await fetch(`https://api.titanic.sh/users/${uid}`);
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
-        }
-        const json = await response.json();
-        if (initialData === null) {
-            initialData = JSON.parse(JSON.stringify(json));
-        }
-        displayUserData(json, initialData);
-    } catch (error) {
-        console.error('An error occurred:', error);
+        const response = await axios.post('https://osu.ppy.sh/oauth/token', body, { headers });
+        // console.log("Status code:", response.status);
+        token = response.data.access_token;
+        tokenExpiry = Date.now() + response.data.expires_in * 1000;
+        return token;
+    } 
+    catch (error) {
+        console.error(error.response?.data || error.message);
+        return null;
     }
 }
 
-function displayUserData(json, initialData) {
-    const stats = json.stats.find(s => s.mode === mode);
-    const initialStats = initialData?.stats.find(s => s.mode === mode);
-    const homeStatsContainer = document.getElementById('home-stats');
-    const fragment = document.createDocumentFragment();
+async function getDataOsu() {
+    uid = toggleUid();
 
-    const statDefinitions = [
-        { id: 'pp', label: 'PP', value: stats.pp, initial: initialStats?.pp, precision: 3 },
-        { id: 'ppv1', label: 'PPv1', value: stats.ppv1, initial: initialStats?.ppv1, precision: 3 },
-        { id: 'rank', label: 'Rank', value: stats.rank, initial: initialStats?.rank, prefix: '#', invertDelta: true },
-        { id: 'acc', label: 'Accuracy', value: stats.acc * 100, initial: initialStats?.acc * 100, precision: 3, suffix: '%' },
-        { id: 'rscore', label: 'Ranked Score', value: stats.rscore, initial: initialStats?.rscore, prefix: '' },
-    ];
+    const token = await getToken();
+    
+    if (!token)
+        return;
 
-    const createElement = (tag, properties = {}, children = []) => {
-        const element = document.createElement(tag);
-        Object.assign(element, properties);
-        children.forEach(child => element.appendChild(child));
-        return element;
+    const headers = {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
     };
 
-    const formatNumber = (value, precision) => value.toLocaleString(undefined, { maximumFractionDigits: precision });
-
-    statDefinitions.forEach(({ id, label, value, initial, precision = 0, prefix = '', suffix = '', invertDelta = false }) => {
-        const labelDivStats = createElement('div', { id, textContent: `${label}:` });
-        const divStats = createElement('div', { id: `stat-${id}`, textContent: `${prefix}${formatNumber(value, precision)}${suffix}` });
-        const delta = value - initial;
-        const divStatsDelta = createElement('div', { id: `delta-${id}`, textContent: (delta !== 0) ? `${invertDelta ? (delta > 0 ? '-' : '+') : (delta > 0 ? '+' : '-')}${formatNumber(Math.abs(delta), precision)}` : '' });
-        const statRow = createElement('div', { className: 'stat-row' }, [labelDivStats, divStats, divStatsDelta]);
-        fragment.appendChild(statRow);
-    });
-
-    homeStatsContainer.replaceChildren(fragment);
+    try {
+        const response = await axios.get(`https://osu.ppy.sh/api/v2/users/${uid}?mode=${mode ?? "osu"}`, { headers });
+        // console.log(response.data);
+        return response.data;
+    } 
+    catch (error) {
+        console.error("API request error:", error.response?.data || error.message);
+        return null;
+    }
 }
 
-fetchUserData(); // initial fetch before refresh timer
-setInterval(fetchUserData, refetchInterval);
+async function getDataRespektive() {
+    try {
+        const response = await axios.get(`https://score.respektive.pw/u/${uid}?mode=${mode ?? "osu"}`)
+        // console.log(scoreRank);
+        return response.data[0];
+    } catch (error) {
+        console.error(error.response?.data || error.message);
+        return null;
+    }
+}
+
+async function getCombinedData() {
+    const data = await Promise.all([getDataOsu(), getDataRespektive()]);
+    return data;
+}
+
+module.exports = {
+    getCombinedData
+};

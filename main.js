@@ -1,5 +1,4 @@
 const { app, BrowserWindow } = require('electron');
-const path = require('path');
 
 function createWindow () {
 const win = new BrowserWindow({
@@ -11,8 +10,8 @@ roundedCorners: false,
 frame: false,
 autoHideMenuBar: true,
 webPreferences: {
-    nodeIntegration: false,
-    contextIsolation: true
+    nodeIntegration: true,
+    contextIsolation: false
 }
 });
 

@@ -55,19 +55,6 @@ body {
     gap: 2px 4px;
 }
 
-.stat-row {
-    display: contents;
-}
-
-.stat-row div:not(:first-child){
-    padding: 2px 6px;
-    border: 1px solid var(--three);
-    background-color: var(--seven);
-}
-
-section { display: none; }
-section.active { display: block; }
-
 nav button {
     color: var(--one);
     background-color: var(--four);
@@ -82,3 +69,34 @@ nav button.active {
     background-color: var(--five);
 }
 nav button:hover:not(.active) { cursor: pointer; }
+
+#home-user {
+    display: flex;
+    gap: 4px;
+}
+
+#home-user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#avatar {
+    width: 56px;
+    height: 56px;
+}
+
+#home-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.user-wrapper {
+    display: flex; /* needed for gap */
+    gap: 4px;
+}
+
+#team {
+    color: rgb(249, 141, 151);
+}

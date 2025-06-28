@@ -1,0 +1,11 @@
+{
+  "score_rank": true,
+  "acc": true,
+  "play_count": false,
+  "total_score": true,
+  "level": false,
+  "avatar": false,
+  "username": false,
+  "team": false,
+  "grade_ssh": true
+}
