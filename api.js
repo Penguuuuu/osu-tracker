@@ -31,7 +31,7 @@ async function getToken() {
 
     try {
         const response = await axios.post('https://osu.ppy.sh/oauth/token', body, { headers });
-        // console.log("Status code:", response.status);
+        console.log("Status code:", response.status);
         token = response.data.access_token;
         tokenExpiry = Date.now() + response.data.expires_in * 1000;
         return token;

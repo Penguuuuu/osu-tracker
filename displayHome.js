@@ -88,11 +88,11 @@ function displayStats(getData) {
 
                 container.append(labelSpan, valueSpan);
                 containerStats.appendChild(container);
-            } else {
-                const valueSpan = container.querySelector('.stat-value');
-                if (valueSpan && valueSpan.textContent !== String(stat.value)) {
-                    valueSpan.textContent = stat.value;
-                }
+            }
+            
+            const valueSpan = container.querySelector('.stat-value');
+            if (valueSpan && valueSpan.textContent !== String(stat.value)) {
+                valueSpan.textContent = stat.value;
             }
         });
 }
