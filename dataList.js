@@ -34,4 +34,4 @@ function dataList(dataOsu, dataRespektive) {
     ];
 }
 
-module.exports = { dataList }
+module.exports = { dataList };

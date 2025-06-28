@@ -30,9 +30,8 @@ function displayUser(getData) {
         avatarImg = document.createElement('img');
         avatarImg.id = avatar.id;
     }
-    if (avatarImg.src !== avatar.value) {
+    if (avatarImg.src !== avatar.value) 
         avatarImg.src = avatar.value;
-    }
 
     let wrapper = document.querySelector('.user-wrapper');
     if (!wrapper) {
@@ -51,15 +50,13 @@ function displayUser(getData) {
     }
 
     const usernameSpan = wrapper.querySelector(`#${username.id}`);
-    if (usernameSpan.textContent !== username.value) {
+    if (usernameSpan.textContent !== username.value) 
         usernameSpan.textContent = username.value;
-    }
 
     const teamSpan = wrapper.querySelector(`#${team.id}`);
     const teamText = `[${team.value}]`;
-    if (teamSpan.textContent !== teamText) {
+    if (teamSpan.textContent !== teamText) 
         teamSpan.textContent = teamText;
-    }
 
     containerUser.append(avatarImg);
     containerUser.append(containerUserDetails);
@@ -89,11 +86,10 @@ function displayStats(getData) {
                 container.append(labelSpan, valueSpan);
                 containerStats.appendChild(container);
             }
-            
+
             const valueSpan = container.querySelector('.stat-value');
-            if (valueSpan && valueSpan.textContent !== String(stat.value)) {
+            if (valueSpan && valueSpan.textContent !== String(stat.value))
                 valueSpan.textContent = stat.value;
-            }
         });
 }
 

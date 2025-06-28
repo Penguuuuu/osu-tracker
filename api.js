@@ -71,7 +71,8 @@ async function getDataRespektive() {
         const response = await axios.get(`https://score.respektive.pw/u/${uid}?mode=${mode ?? "osu"}`)
         // console.log(scoreRank);
         return response.data[0];
-    } catch (error) {
+    }
+    catch (error) {
         console.error(error.response?.data || error.message);
         return null;
     }
@@ -82,6 +83,4 @@ async function getCombinedData() {
     return data;
 }
 
-module.exports = {
-    getCombinedData
-};
+module.exports = { getCombinedData };
